@@ -25,12 +25,10 @@ class Property;
 class GameController {
 private:
     GameBoard* gameBoard;
-<<<<<<< HEAD
     ConfigParser* configParser;
     GameSaver* gameSaver;
     GameLoader* gameLoader;
     TransactionLogger* transactionLogger;
-=======
     // Bank* bank;
     // Auction* auction;
     // BuildingManager* buildingManager;
@@ -38,12 +36,7 @@ private:
     TurnManager* turnManager;
     // MovementHandler* movementHandler;
     // SkillCardManager* skillCardManager;
-    // ConfigParser* configParser;
-    // GameSaver* gameSaver;
-    // GameLoader* gameLoader;
-    // TransactionLogger* transactionLogger;
     // WinConditionChecker* winConditionChecker;
->>>>>>> a27281703938384cb8b2dbd641a38b059f28cfe8
 
 public:
     GameController();

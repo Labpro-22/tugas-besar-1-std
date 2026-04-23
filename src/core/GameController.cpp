@@ -66,7 +66,6 @@ bool GameController::saveGame(const std::string& filename) {
     }
 }
 
-<<<<<<< ours
 bool GameController::loadGame(const std::string& filename) {
     try {
         if (!gameLoader->validate(filename)) {
@@ -79,27 +78,6 @@ bool GameController::loadGame(const std::string& filename) {
     } catch (const FileFormatException& e) {
         cout << "[GameController] GameLoader error: " << e.what() << endl;
         return false;
-=======
-    for (int i = 0; i < 40; i++) {
-            std::map<int, int> rentTable = {
-                {0, 10}, {1, 20}, {2, 30}, {3, 40}, {4, 50}, {5, 100}
-            };
-
-            auto street = std::make_unique<Street>(
-                i,                              // position
-                "Street_" + std::to_string(i),  // name
-                "S" + std::to_string(i),        // code
-                "MERAH",                        // color (string for your BoardView)
-                ColorGroup::MERAH,  
-                69,              // adjust based on your enum
-                67,
-                50,                             // house price
-                100                             // hotel price
-            );
-
-            street->setOwner(""); // initially no owner
-            gameBoard->addTile(std::move(street));
->>>>>>> theirs
     }
 }
 
@@ -107,9 +85,7 @@ TransactionLogger* GameController::getLogger() const {
     return transactionLogger;
 }
 
-void GameController::logAction(const std::string& username,
-                               const std::string& action,
-                               const std::string& detail) {
+void GameController::logAction(const std::string& username, const std::string& action, const std::string& detail) {
     if (transactionLogger == nullptr) return;
     int turn = (gameBoard != nullptr) ? gameBoard->getCurrentTurnNumber() : 0;
     transactionLogger->log(turn, username, action, detail);
