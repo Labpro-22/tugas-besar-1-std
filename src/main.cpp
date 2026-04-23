@@ -21,9 +21,9 @@ int main() {
     
     // Initialize game
     gameController.startGame();
-    gameController.addPlayer("Player 1", 2000);
-    gameController.addPlayer("Player 2", 2000);
-    gameController.addPlayer("Player 3", 2000);
+    gameController.addPlayer("Player1", 2000);
+    gameController.addPlayer("Player2", 2000);
+    gameController.addPlayer("Player3", 2000);
 
     
     cout << "\n[INFO] Ketik HELP untuk melihat command yang tersedia." << endl;

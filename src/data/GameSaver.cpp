@@ -13,8 +13,7 @@
 #include "../../include/models/Railroad.hpp"
 #include "../../include/models/Utility.hpp"
 
-void GameSaver::writePlayerStates(ofstream& out,
-                                  const vector<std::shared_ptr<Player>>& players) const {
+void GameSaver::writePlayerStates(ofstream& out, const vector<shared_ptr<Player>>& players) const {
     out << players.size() << "\n";
     for (size_t i = 0; i < players.size(); ++i) {
         Player* p = players[i].get();
@@ -60,18 +59,17 @@ void GameSaver::writeTurnOrder(ofstream& out, GameBoard* board) const {
         out << "\n\n";
         return;
     }
-    const vector<std::shared_ptr<Player>>& players = board->getPlayers();
+    const vector<shared_ptr<Player>>& players = board->getPlayers();
     for (size_t i = 0; i < players.size(); ++i) {
         if (i > 0) out << " ";
         if (players[i] != nullptr) out << players[i]->getUsername();
     }
     out << "\n";
-    std::shared_ptr<Player> cur = board->getCurrentPlayer();
+    shared_ptr<Player> cur = board->getCurrentPlayer();
     out << (cur ? cur->getUsername() : "") << "\n";
 }
 
-void GameSaver::writePropertyStates(ofstream& out,
-                                    const vector<std::unique_ptr<Tile>>& tiles) const {
+void GameSaver::writePropertyStates(ofstream& out, const vector<unique_ptr<Tile>>& tiles) const {
     vector<Property*> props;
     for (size_t i = 0; i < tiles.size(); ++i) {
         Property* p = dynamic_cast<Property*>(tiles[i].get());
@@ -113,8 +111,7 @@ void GameSaver::writePropertyStates(ofstream& out,
     }
 }
 
-void GameSaver::writeDeckState(ofstream& out,
-                               const vector<SkillCard*>& deck) const {
+void GameSaver::writeDeckState(ofstream& out, const vector<SkillCard*>& deck) const {
     out << deck.size();
     for (size_t i = 0; i < deck.size(); ++i) {
         SkillCard* c = deck[i];

@@ -14,10 +14,10 @@ class ActionCard;
 
 class ConfigParser : public FileParser {
 private:
-    std::string basePath;
+    string basePath;
 
-    std::map<int, int> railroadRentTable;
-    std::map<int, int> utilityMultiplierTable;
+    map<int, int> railroadRentTable;
+    map<int, int> utilityMultiplierTable;
     int pphFlat;
     int pphPercentage;
     int pbmFlat;
@@ -29,18 +29,18 @@ private:
     CardDeck<ActionCard>* chanceDeck;
     CardDeck<ActionCard>* communityDeck;
 
-    std::map<int, Tile*> stagedTiles;
+    map<int, Tile*> stagedTiles;
 
-    void parsePropertyConfig(const std::string& filename);
-    void parseRailroadConfig(const std::string& filename);
-    void parseUtilityConfig(const std::string& filename);
-    void parseTaxConfig(const std::string& filename);
-    void parseActionConfig(const std::string& filename);
-    void parseSpecialConfig(const std::string& filename);
-    void parseMiscConfig(const std::string& filename);
+    void parsePropertyConfig(const string& filename);
+    void parseRailroadConfig(const string& filename);
+    void parseUtilityConfig(const string& filename);
+    void parseTaxConfig(const string& filename);
+    void parseActionConfig(const string& filename);
+    void parseSpecialConfig(const string& filename);
+    void parseMiscConfig(const string& filename);
 
 public:
-    explicit ConfigParser(const std::string& basePath);
+    explicit ConfigParser(const string& basePath);
     ~ConfigParser();
 
     void loadConfig(GameBoard* board);

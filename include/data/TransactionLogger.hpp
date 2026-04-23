@@ -9,17 +9,17 @@ using namespace std;
 
 class TransactionLogger {
 private:
-    std::vector<std::string> logs;
+    vector<string> logs;
 
-    std::string formatEntry(int turn, const std::string& username,
-                            const std::string& actionType,
-                            const std::string& detail) const;
+    string formatEntry(int turn, const string& username,
+                            const string& actionType,
+                            const string& detail) const;
 
 public:
-    void log(int turn, const std::string& username,
-             const std::string& actionType, const std::string& detail);
-    std::vector<std::string> getAll() const;
-    std::vector<std::string> getRecent(int count) const;
+    void log(int turn, const string& username,
+             const string& actionType, const string& detail);
+    vector<string> getAll() const;
+    vector<string> getRecent(int count) const;
     int getCount() const;
     void clear();
 };

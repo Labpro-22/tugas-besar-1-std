@@ -9,8 +9,8 @@ using namespace std;
 
 class FileParser {
 protected:
-    std::vector<std::string> tokenizeLine(const std::string& line) const;
-    std::string trim(const std::string& s) const;
+    vector<string> tokenizeLine(const string& line) const;
+    string trim(const string& s) const;
 };
 
 #endif

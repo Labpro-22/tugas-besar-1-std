@@ -2,44 +2,95 @@
 #include "../../include/models/GameBoard.hpp"
 #include "../../include/models/Player.hpp"
 #include "../../include/models/Street.hpp"
+#include "../../include/data/ConfigParser.hpp"
+#include "../../include/data/GameSaver.hpp"
+#include "../../include/data/GameLoader.hpp"
+#include "../../include/data/TransactionLogger.hpp"
+#include "../../include/utils/FileFormatException.hpp"
+#include "../../include/utils/FileWriteException.hpp"
 #include <iostream>
 
 using namespace std;
 
-GameController::GameController() {
+GameController::GameController()
+    : gameBoard(nullptr), configParser(nullptr),
+      gameSaver(nullptr), gameLoader(nullptr),
+      transactionLogger(nullptr) {
     gameBoard = new GameBoard();
+    gameSaver = new GameSaver();
+    gameLoader = new GameLoader();
+    transactionLogger = new TransactionLogger();
 }
 
 GameController::~GameController() {
-    if (gameBoard != nullptr) {
-        delete gameBoard;
-    }
+    delete gameBoard;
+    delete configParser;
+    delete gameSaver;
+    delete gameLoader;
+    delete transactionLogger;
 }
 
 void GameController::startGame() {
-
     cout << "[GameController] Game berhasil dimulai!\n";
-
-
-for (int i = 0; i < 40; i++) {
-        std::map<int, int> rentTable = {
-            {0, 10}, {1, 20}, {2, 30}, {3, 40}, {4, 50}, {5, 100}
-        };
-
-        auto street = std::make_unique<Street>(
-            i,                              // position
-            "Street_" + std::to_string(i),  // name
-            "MERAH",                        // color (string for your BoardView)
-            ColorGroup::MERAH,  
-            69,              // adjust based on your enum
-            67,
-            50,                             // house price
-            100                             // hotel price
-        );
-
-        street->setOwner(""); // initially no owner
-        gameBoard->addTile(std::move(street));
+    if (!loadFromConfig("../config")) {
+        cout << "[GameController] WARNING: gagal memuat config/, board kosong.\n";
     }
+}
+
+bool GameController::loadFromConfig(const std::string& basePath) {
+    try {
+        delete configParser;
+        configParser = new ConfigParser(basePath);
+        configParser->loadConfig(gameBoard);
+        if (configParser->getMaxTurn() > 0) {
+            gameBoard->setMaxTurn(configParser->getMaxTurn());
+        }
+        cout << "[GameController] Config dimuat dari " << basePath
+             << " (" << gameBoard->getTiles().size() << " petak, MAX_TURN="
+             << gameBoard->getMaxTurn() << ")\n";
+        return true;
+    } catch (const FileFormatException& e) {
+        cout << "[GameController] ConfigParser error: " << e.what() << endl;
+        return false;
+    }
+}
+
+bool GameController::saveGame(const std::string& filename) {
+    try {
+        gameSaver->save(gameBoard, transactionLogger, filename);
+        cout << "[GameController] Game disimpan ke " << filename << endl;
+        return true;
+    } catch (const FileWriteException& e) {
+        cout << "[GameController] GameSaver error: " << e.what() << endl;
+        return false;
+    }
+}
+
+bool GameController::loadGame(const std::string& filename) {
+    try {
+        if (!gameLoader->validate(filename)) {
+            cout << "[GameController] Save file invalid: " << filename << endl;
+            return false;
+        }
+        gameLoader->loadSave(filename, gameBoard, transactionLogger);
+        cout << "[GameController] Game dimuat dari " << filename << endl;
+        return true;
+    } catch (const FileFormatException& e) {
+        cout << "[GameController] GameLoader error: " << e.what() << endl;
+        return false;
+    }
+}
+
+TransactionLogger* GameController::getLogger() const {
+    return transactionLogger;
+}
+
+void GameController::logAction(const std::string& username,
+                               const std::string& action,
+                               const std::string& detail) {
+    if (transactionLogger == nullptr) return;
+    int turn = (gameBoard != nullptr) ? gameBoard->getCurrentTurnNumber() : 0;
+    transactionLogger->log(turn, username, action, detail);
 }
 
 void GameController::addPlayer(const std::string& username, int startingMoney) {
@@ -47,6 +98,7 @@ void GameController::addPlayer(const std::string& username, int startingMoney) {
         std::shared_ptr<Player> newPlayer = std::make_shared<Player>(username, startingMoney);
         gameBoard->addPlayer(newPlayer);
         cout << "[GameController] Player " << username << " ditambahkan dengan uang " << startingMoney << endl;
+        logAction(username, "JOIN", "saldo awal " + std::to_string(startingMoney));
     }
 }
 

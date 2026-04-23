@@ -25,18 +25,10 @@ class Property;
 class GameController {
 private:
     GameBoard* gameBoard;
-    // Bank* bank;
-    // Auction* auction;
-    // BuildingManager* buildingManager;
-    // Dice* dice;
-    // TurnManager* turnManager;
-    // MovementHandler* movementHandler;
-    // SkillCardManager* skillCardManager;
-    // ConfigParser* configParser;
-    // GameSaver* gameSaver;
-    // GameLoader* gameLoader;
-    // TransactionLogger* transactionLogger;
-    // WinConditionChecker* winConditionChecker;
+    ConfigParser* configParser;
+    GameSaver* gameSaver;
+    GameLoader* gameLoader;
+    TransactionLogger* transactionLogger;
 
 public:
     GameController();
@@ -45,6 +37,12 @@ public:
     void startGame();
     void initializeGame();
     void addPlayer(const std::string& username, int startingMoney);
+
+    bool loadFromConfig(const std::string& basePath);
+    bool saveGame(const std::string& filename);
+    bool loadGame(const std::string& filename);
+    TransactionLogger* getLogger() const;
+    void logAction(const std::string& username, const std::string& action, const std::string& detail);
 
     void processTurn(Player& player, int diceResult);
     void processLanding(Player& player, Tile* tile);

@@ -2,6 +2,7 @@
 #include "../../include/views/BoardView.hpp"
 #include "../../include/views/PropertyView.hpp"
 #include "../../include/core/GameController.hpp"
+#include "../../include/data/TransactionLogger.hpp"
 
 #include <iostream>
 #include <sstream>
@@ -53,10 +54,23 @@ void CommandProcessor::executeCommand(const string& cmd) {
         cout << "[INFO] Command BANGUN belum diimplementasi" << endl;
     }
     else if (token == "SIMPAN") {
-        cout << "[INFO] Command SIMPAN belum diimplementasi" << endl;
+        string fname;
+        ss >> fname;
+        if (fname.empty()) fname = "savegame.txt";
+        if (gameController != nullptr) gameController->saveGame(fname);
+    }
+    else if (token == "MUAT") {
+        string fname;
+        ss >> fname;
+        if (fname.empty()) fname = "savegame.txt";
+        if (gameController != nullptr) gameController->loadGame(fname);
     }
     else if (token == "CETAK_LOG") {
-        cout << "[INFO] Command CETAK_LOG belum diimplementasi" << endl;
+        if (gameController != nullptr && gameController->getLogger() != nullptr) {
+            vector<string> entries = gameController->getLogger()->getAll();
+            cout << "[LOG] " << entries.size() << " entri:" << endl;
+            for (size_t i = 0; i < entries.size(); ++i) cout << entries[i] << endl;
+        }
     }
     else if (token == "GUNAKAN_KEMAMPUAN") {
         cout << "[INFO] Command GUNAKAN_KEMAMPUAN belum diimplementasi" << endl;
@@ -69,6 +83,9 @@ void CommandProcessor::executeCommand(const string& cmd) {
         cout << "Commands tersedia:\n";
         cout << "  CETAK_PAPAN    - Menampilkan board game\n";
         cout << "  CETAK_PROPERTI - Menampilkan detail properti\n";
+        cout << "  SIMPAN [file]  - Simpan state game (default savegame.txt)\n";
+        cout << "  MUAT   [file]  - Muat state game (default savegame.txt)\n";
+        cout << "  CETAK_LOG      - Tampilkan seluruh log transaksi\n";
         cout << "  EXIT           - Keluar dari game\n";
         cout << "  HELP           - Tampilkan help ini\n";
     }
