@@ -2,7 +2,11 @@
 #include "../../include/views/BoardView.hpp"
 #include "../../include/views/PropertyView.hpp"
 #include "../../include/core/GameController.hpp"
+<<<<<<< HEAD
 #include "../../include/data/TransactionLogger.hpp"
+=======
+#include "../../include/core/TurnManager.hpp"
+>>>>>>> a27281703938384cb8b2dbd641a38b059f28cfe8
 
 #include <iostream>
 #include <sstream>
