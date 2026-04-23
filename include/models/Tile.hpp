@@ -20,6 +20,7 @@ public:
     std::string getName() const;
     std::string getColor() const;
     std::string getCode() const;
+    void setCode(const std::string& c);
 
     virtual void onLand(Player* player) = 0;
     virtual void onPass(Player* player) = 0;

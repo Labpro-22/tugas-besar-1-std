@@ -1,7 +1,14 @@
 #include <cstdlib>
+#include <ctime>
 #include "../../include/utils/Dice.hpp"
 
 Dice::Dice() {
+    static bool seeded = false;
+    if (!seeded) {
+        srand(static_cast<unsigned>(time(nullptr)));
+        seeded = true;
+    }
+
     d1 = d2 = 1;
     isManualMode = false;
 }
@@ -21,8 +28,7 @@ void Dice::setManual(int a, int b) {
 int Dice::getTotal() { return d1 + d2; }
 bool Dice::isDouble() { return d1 == d2; }
 
-int Dice::getD1() { return d1; }
-int Dice::getD2() { return d2; }
 int Dice::getDie1() { return d1; }
 int Dice::getDie2() { return d2; }
-bool Dice::getManualMode() { return isManualMode; }
+bool Dice::getManualMode() { return isManualMode; 
+}

@@ -11,6 +11,10 @@ Street::Street(int position, const std::string& name, const std::string& code, c
       buildingCount("0") {
 }
 
+Street::Street(int position, const std::string& name, const std::string& color, ColorGroup colorGroup, int purchasePrice, int mortgageValue, int housePrice, int hotelPrice)
+    : Street(position, name, "", color, colorGroup, purchasePrice, mortgageValue, housePrice, hotelPrice) {
+}
+
 ColorGroup Street::getColorGroup() const {
     return colorGroup;
 }

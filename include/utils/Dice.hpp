@@ -15,8 +15,7 @@ public:
     int getTotal();
     bool isDouble();
 
-    int getD1();
-    int getD2();
+
     int getDie1();
     int getDie2();
     bool getManualMode();

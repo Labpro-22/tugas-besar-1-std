@@ -3,7 +3,6 @@
 
 #include <string>
 #include <vector>
-
 using namespace std;
 
 class SkillCard;
@@ -22,7 +21,7 @@ private:
     PlayerStatus status;
     int jailTurnsRemaining;
     int consecutiveDoubles;
-    vector<SkillCard*> hand;
+    vector<SkillCard*> hand; // pointer sementara, CardDeck yang owner
     bool hasUsedCardThisTurn;
     bool hasRolledThisTurn;
     bool shieldActive;
@@ -48,8 +47,16 @@ public:
     void setStatus(PlayerStatus s);
 
     // money
-    Player& operator+=(int amt);
-    Player& operator-=(int amt);
+    void payVoluntary(int amt);   // beli properti, lelang — tidak kena shield
+    Player& operator+=(int amt);  // terima uang
+    Player& operator-=(int amt);  // kena tagihan/sanksi — kena shield
+
+    // wealth — untuk WinConditionChecker dan PPH
+    int calculateTotalWealth() const;
+
+    // comparison — untuk WinConditionChecker MAX_TURN
+    bool operator>(const Player& other) const;
+    bool operator<(const Player& other) const;
 
     // double
     void incrementConsecutiveDoubles();
@@ -66,7 +73,7 @@ public:
     void markCardUsed();
     void resetTurnFlags();
 
-    // card
+    // card — CardDeck yang owner, hand hanya pegang sementara
     void receiveCard(SkillCard* c);
     SkillCard* removeCard(int idx);
 

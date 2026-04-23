@@ -6,7 +6,7 @@
 #include "../../include/utils/Dice.hpp"
 
 void GameLoop::playTurn(GameContext* ctx, Dice& dice) {
-    if (ctx == nullptr || ctx->turnManager == nullptr || ctx->movementHandler == nullptr) {
+    if (ctx == nullptr || !ctx->isReadyForTurn()) {
         return;
     }
 

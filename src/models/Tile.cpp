@@ -19,3 +19,7 @@ std::string Tile::getColor() const {
 std::string Tile::getCode() const {
     return code;
 }
+
+void Tile::setCode(const std::string& c) {
+    code = c;
+}

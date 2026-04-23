@@ -1,0 +1,44 @@
+4 15
+3
+Kebin 900 6 ACTIVE 2 TeleportCard 13 - DemolitionCard - -
+Stewart 1300 3 ACTIVE 2 DiscountCard 56 1 MoveCard 6 -
+Gro 1000 37 JAILED 2 LassoCard - - ShieldCard - -
+Kebin Stewart Gro
+Stewart
+28
+GRT street Stewart MORTGAGED 1 0 0
+TSK street BANK BANK 1 0 0
+GBR railroad Kebin OWNED 1 0 0
+BGR street Kebin OWNED 1 0 0
+DPK street BANK BANK 1 0 0
+BKS street BANK BANK 1 0 0
+MGL street BANK BANK 1 0 0
+PLN utility BANK BANK 1 0 0
+SOL street BANK BANK 1 0 0
+YOG street BANK BANK 1 0 0
+STB railroad BANK BANK 1 0 0
+MAL street BANK BANK 1 0 0
+SMG street BANK BANK 1 0 0
+SBY street BANK BANK 1 0 0
+MKS street BANK BANK 1 0 0
+BLP street BANK BANK 1 0 0
+MND street BANK BANK 1 0 0
+TUG railroad BANK BANK 1 0 0
+PLB street BANK BANK 1 0 0
+PKB street BANK BANK 1 0 0
+PAM utility BANK BANK 1 0 0
+MED street BANK BANK 1 0 0
+BDG street BANK BANK 1 0 0
+DEN street BANK BANK 1 0 0
+MTR street BANK BANK 1 0 0
+GUB railroad BANK BANK 1 0 0
+JKT street Gro OWNED 2 3 2
+IKN street BANK BANK 1 0 0
+9 DiscountCard ShieldCard LassoCard TeleportCard DemolitionCard MoveCard MoveCard MoveCard DiscountCard
+6
+[Turn 1] Kebin | DADU | Lempar: 3+4=7 mendarat di Bogor (BGR)
+[Turn 1] Kebin | BELI | Beli Bogor (BGR) seharga M100
+[Turn 2] Stewart | DADU | Lempar: 4+4=8 mendarat di BGR
+[Turn 2] Stewart | SEWA | Bayar M6 ke Kebin (BGR, L0)
+[Turn 2] Gro | DADU | Lempar: 6+6=12 mendarat di Jakarta (JKT)
+[Turn 2] Gro | BELI | Beli Jakarta (JKT) seharga M350

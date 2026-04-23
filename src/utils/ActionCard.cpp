@@ -46,10 +46,39 @@ void ChanceCard::execute(Player* player, GameContext* ctx) {
 }
 
 string ChanceCard::getDescription() { return desc; }
+string ChanceCard::getCardType() const { return "ChanceCard"; }
+ActionCardType ChanceCard::getType() const { return type; }
+int ChanceCard::getValue() const { return value; }
 
 void CommunityCard::execute(Player* player, GameContext* ctx) {
-    // sama kayak Chance
-    ChanceCard(type, value, desc).execute(player, ctx);
+    if (!player || !ctx) return;
+
+    switch (type) {
+        case ActionCardType::COLLECT_FROM_ALL:
+            for (Player* other : ctx->allPlayers) {
+                if (other != player && other->getStatus() == ACTIVE) {
+                    (*other) -= value;
+                    (*player) += value;
+                }
+            }
+            break;
+        case ActionCardType::PAY_TO_ALL:
+            for (Player* other : ctx->allPlayers) {
+                if (other != player && other->getStatus() == ACTIVE) {
+                    (*player) -= value;
+                    (*other) += value;
+                }
+            }
+            break;
+        case ActionCardType::PAY_MONEY:
+            (*player) -= value;
+            break;
+        default:
+            break;
+    }
 }
 
 string CommunityCard::getDescription() { return desc; }
+string CommunityCard::getCardType() const { return "CommunityCard"; }
+ActionCardType CommunityCard::getType() const { return type; }
+int CommunityCard::getValue() const { return value; }

@@ -7,6 +7,8 @@
 
 class Tile;
 class Player;
+class SkillCard;
+template <typename T> class CardDeck;
 
 
 class GameBoard {
@@ -16,6 +18,9 @@ private:
     std::vector<std::unique_ptr<Tile>> tiles;
     std::vector<std::shared_ptr<Player>> players;
     int currentPlayerIndex;
+    int currentTurnNumber = 1;
+    int maxTurn = 0;
+    CardDeck<SkillCard*>* skillDeck = nullptr;
 
 public:
     GameBoard();
@@ -33,4 +38,14 @@ public:
     const std::vector<std::shared_ptr<Player>>& getPlayers() const;
     const std::vector<std::unique_ptr<Tile>>& getTiles() const;
 
+    int getCurrentTurnNumber() const;
+    void setCurrentTurnNumber(int t);
+    int getMaxTurn() const;
+    void setMaxTurn(int m);
+
+    CardDeck<SkillCard*>* getSkillDeck() const;
+    void setSkillDeck(CardDeck<SkillCard*>* d);
+
+    void setCurrentPlayerByUsername(const std::string& username);
+    void setTurnOrder(const std::vector<std::string>& order);
 };

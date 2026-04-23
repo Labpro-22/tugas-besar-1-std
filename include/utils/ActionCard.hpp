@@ -1,15 +1,17 @@
 #ifndef ACTIONCARD_H
 #define ACTIONCARD_H
 
+#pragma once
 #include <string>
-using namespace std;
 
 class Player;
-class GameContext;
+class GameContext;  // satu context
 
 enum class ActionCardType {
     GAIN_MONEY,
     PAY_MONEY,
+    COLLECT_FROM_ALL,
+    PAY_TO_ALL,
     MOVE,
     TELEPORT,
     GO_TO_JAIL,
@@ -19,7 +21,8 @@ enum class ActionCardType {
 class ActionCard {
 public:
     virtual void execute(Player* player, GameContext* ctx) = 0;
-    virtual string getDescription() = 0;
+    virtual std::string getDescription() = 0;
+    virtual std::string getCardType() const = 0;
     virtual ~ActionCard() {}
 };
 
@@ -27,26 +30,30 @@ class ChanceCard : public ActionCard {
 private:
     ActionCardType type;
     int value;
-    string desc;
+    std::string desc;
 
 public:
-    ChanceCard(ActionCardType t, int v, string d);
-
+    ChanceCard(ActionCardType t, int v, std::string d);
     void execute(Player* player, GameContext* ctx) override;
-    string getDescription() override;
+    std::string getDescription() override;
+    std::string getCardType() const override;
+    ActionCardType getType() const;
+    int getValue() const;
 };
 
 class CommunityCard : public ActionCard {
 private:
     ActionCardType type;
     int value;
-    string desc;
+    std::string desc;
 
 public:
-    CommunityCard(ActionCardType t, int v, string d);
-
+    CommunityCard(ActionCardType t, int v, std::string d);
     void execute(Player* player, GameContext* ctx) override;
-    string getDescription() override;
+    std::string getDescription() override;
+    std::string getCardType() const override;
+    ActionCardType getType() const;
+    int getValue() const;
 };
 
 #endif

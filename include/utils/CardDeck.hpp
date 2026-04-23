@@ -78,6 +78,14 @@ public:
         discardPile.clear();
     }
 
+    const std::vector<T>& getDeck() const {
+        return deck;
+    }
+
+    const std::vector<T>& getDiscardPile() const {
+        return discardPile;
+    }
+
     void deleteAllCards() {
         if constexpr (std::is_pointer<T>::value) {
             for (T card : deck) {

@@ -26,3 +26,7 @@ void GoTile::onPass(Player* player) {
         giveSalary(player);
     }
 }
+
+void GoTile::executeSpecial(Player* player) {
+    (void)player;
+}
