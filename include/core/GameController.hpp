@@ -29,7 +29,7 @@ private:
     // Auction* auction;
     // BuildingManager* buildingManager;
     // Dice* dice;
-    // TurnManager* turnManager;
+    TurnManager* turnManager;
     // MovementHandler* movementHandler;
     // SkillCardManager* skillCardManager;
     // ConfigParser* configParser;

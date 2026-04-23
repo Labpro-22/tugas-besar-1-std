@@ -21,24 +21,25 @@ void GameController::startGame() {
     cout << "[GameController] Game berhasil dimulai!\n";
 
 
-for (int i = 0; i < 40; i++) {
-        std::map<int, int> rentTable = {
-            {0, 10}, {1, 20}, {2, 30}, {3, 40}, {4, 50}, {5, 100}
-        };
+    for (int i = 0; i < 40; i++) {
+            std::map<int, int> rentTable = {
+                {0, 10}, {1, 20}, {2, 30}, {3, 40}, {4, 50}, {5, 100}
+            };
 
-        auto street = std::make_unique<Street>(
-            i,                              // position
-            "Street_" + std::to_string(i),  // name
-            "MERAH",                        // color (string for your BoardView)
-            ColorGroup::MERAH,  
-            69,              // adjust based on your enum
-            67,
-            50,                             // house price
-            100                             // hotel price
-        );
+            auto street = std::make_unique<Street>(
+                i,                              // position
+                "Street_" + std::to_string(i),  // name
+                "S" + std::to_string(i),        // code
+                "MERAH",                        // color (string for your BoardView)
+                ColorGroup::MERAH,  
+                69,              // adjust based on your enum
+                67,
+                50,                             // house price
+                100                             // hotel price
+            );
 
-        street->setOwner(""); // initially no owner
-        gameBoard->addTile(std::move(street));
+            street->setOwner(""); // initially no owner
+            gameBoard->addTile(std::move(street));
     }
 }
 

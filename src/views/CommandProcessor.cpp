@@ -2,6 +2,7 @@
 #include "../../include/views/BoardView.hpp"
 #include "../../include/views/PropertyView.hpp"
 #include "../../include/core/GameController.hpp"
+#include "../../include/core/TurnManager.hpp"
 
 #include <iostream>
 #include <sstream>

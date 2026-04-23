@@ -22,11 +22,10 @@ public:
 private:
     std::string getPlayersOnTile(int pos, const std::vector<std::shared_ptr<Player>>& players);
     std::string getColorCode(const std::string& color);
-    std::string formatTile(Tile* tile, const std::vector<std::shared_ptr<Player>>& players);
+    pair<string, string> formatTile2Line(Tile* tile, const std::vector<std::shared_ptr<Player>>& players);
     void printTop(GameBoard& board, const std::vector<std::shared_ptr<Player>>& players);
     void printBottom(GameBoard& board, const std::vector<std::shared_ptr<Player>>& players);
     void printMiddle(GameBoard& board, const std::vector<std::shared_ptr<Player>>& players);
-    void printCenterInfo();
 };
 
 #endif
