@@ -81,5 +81,4 @@ void Property::onLand(Player* player, GameContext* ctx) {
 
 void Property::onPass(Player* player) {
     // Default: no action when passing
-    
 }

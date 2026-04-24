@@ -29,22 +29,22 @@ private:
     GameSaver* gameSaver;
     GameLoader* gameLoader;
     TransactionLogger* transactionLogger;
-    // Bank* bank;
-    // Auction* auction;
-    // BuildingManager* buildingManager;
-    // Dice* dice;
+    Bank* bank;
+    Auction* auction;
+    BuildingManager* buildingManager;
+    Dice* dice;
     TurnManager* turnManager;
-    // MovementHandler* movementHandler;
-    // SkillCardManager* skillCardManager;
-    // WinConditionChecker* winConditionChecker;
+    MovementHandler* movementHandler;
+    SkillCardManager* skillCardManager;
+    WinConditionChecker* winConditionChecker;
 
 public:
     GameController();
     ~GameController();
 
-    void startGame();
+    std::string startGame();
     void initializeGame();
-    void addPlayer(const std::string& username, int startingMoney);
+    std::string addPlayer(const std::string& username, int startingMoney);
 
     bool loadFromConfig(const std::string& basePath);
     bool saveGame(const std::string& filename);
@@ -53,7 +53,7 @@ public:
     void logAction(const std::string& username, const std::string& action, const std::string& detail);
 
     void processTurn(Player& player, int diceResult);
-    void processLanding(Player& player, Tile* tile);
+    std::string processLanding(Player& player, Tile* tile);
     void processPurchase(Player& player, Property* property);
     void processAuction(Property* property);
     void processBankruptcy(Player& player);

@@ -16,8 +16,9 @@ int main() {
     
     BoardView boardView;
     PropertyView propertyView;
+    GameView gameView;
     
-    CommandProcessor commandProcessor(&gameController, &boardView, &propertyView);
+    CommandProcessor commandProcessor(&gameController, &boardView, &propertyView, &gameView);
     
     // Initialize game
     gameController.startGame();

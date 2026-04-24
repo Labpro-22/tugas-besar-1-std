@@ -30,11 +30,14 @@ GameController::~GameController() {
     delete transactionLogger;
 }
 
-void GameController::startGame() {
-    cout << "[GameController] Game berhasil dimulai!\n";
+string GameController::startGame() {
+    string msg = "Game berhasil dimulai!";
+
     if (!loadFromConfig("../config")) {
-        cout << "[GameController] WARNING: gagal memuat config/, board kosong.\n";
+        msg += "\nWARNING: gagal memuat config/, board kosong.";
     }
+
+    return msg;
 }
 
 bool GameController::loadFromConfig(const std::string& basePath) {
@@ -91,13 +94,15 @@ void GameController::logAction(const std::string& username, const std::string& a
     transactionLogger->log(turn, username, action, detail);
 }
 
-void GameController::addPlayer(const std::string& username, int startingMoney) {
-    if (gameBoard != nullptr) {
-        std::shared_ptr<Player> newPlayer = std::make_shared<Player>(username, startingMoney);
-        gameBoard->addPlayer(newPlayer);
-        cout << "[GameController] Player " << username << " ditambahkan dengan uang " << startingMoney << endl;
-        logAction(username, "JOIN", "saldo awal " + std::to_string(startingMoney));
-    }
+string GameController::addPlayer(const string& username, int money) {
+    if (!gameBoard) return "Board tidak tersedia";
+
+    auto p = make_shared<Player>(username, money);
+    gameBoard->addPlayer(p);
+
+    logAction(username, "JOIN", "saldo awal " + to_string(money));
+
+    return "Player " + username + " ditambahkan dengan uang " + to_string(money);
 }
 
 void GameController::processTurn(Player& player, int diceResult) {
@@ -110,15 +115,10 @@ void GameController::processTurn(Player& player, int diceResult) {
     // movementHandler->movePlayer(...)
 }
 
-void GameController::processLanding(Player& player, Tile* tile) {
-    (void)player;
+string GameController::processLanding(Player& player, Tile* tile) {
+    if (!tile) return "";
 
-    if (tile == nullptr) return;
-
-    cout << "[GameController] processLanding di " << tile->getName() << endl;
-
-    // nanti:
-    // tile->onLand(player)
+    return "Mendarat di " + tile->getName();
 }
 
 void GameController::processPurchase(Player& player, Property* property) {

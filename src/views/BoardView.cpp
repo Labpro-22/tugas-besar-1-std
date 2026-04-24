@@ -6,17 +6,17 @@
 using namespace std;
 
 pair<string, string> BoardView::formatTile2Line(Tile* tile, const vector<shared_ptr<Player>>& players) {
-    if (!tile) return {"        ", "        "};
+    if (!tile) return {"          ", "          "};
 
     string code = tile->getCode();
     string name = tile->getName().substr(0, min((size_t)3, tile->getName().length()));
 
     string line1 = "[" + code + "] " + name;
 
-    if (line1.length() < 8)
-        line1 += string(8 - line1.length(), ' ');
+    if (line1.length() < 10)
+        line1 += string(10 - line1.length(), ' ');
     else
-        line1 = line1.substr(0, 8);
+        line1 = line1.substr(0, 10);
 
     string line2 = "";
     // for (int i = 0; i < (int)players.size(); i++) {
@@ -25,10 +25,10 @@ pair<string, string> BoardView::formatTile2Line(Tile* tile, const vector<shared_
     //     }
     // }
 
-    if (line2.length() < 8)
-        line2 += string(8 - line2.length(), ' ');
+    if (line2.length() < 10)
+        line2 += string(10 - line2.length(), ' ');
     else
-        line2 = line2.substr(0, 8);
+        line2 = line2.substr(0, 10);
 
     string color = getColorCode(tile->getColor());
 
@@ -84,6 +84,9 @@ void BoardView::printTop(GameBoard& board, const vector<shared_ptr<Player>>& pla
         cout << t.second << "|";
     }
     cout << endl;
+    cout << "+";
+    for (int i = 0; i <= 10; i++) cout << "----------+";
+    cout << endl;
 }
 
 void BoardView::printBottom(GameBoard& board, const vector<shared_ptr<Player>>& players) {
@@ -105,6 +108,9 @@ void BoardView::printBottom(GameBoard& board, const vector<shared_ptr<Player>>& 
         auto t = formatTile2Line(board.getTileAt(i), players);
         cout << t.second << "|";
     }
+    cout << endl;
+    cout << "+";
+    for (int i = 0; i <= 10; i++) cout << "----------+";
     cout << endl;
 }
 
@@ -136,43 +142,40 @@ void BoardView::printBottom(GameBoard& board, const vector<shared_ptr<Player>>& 
 
 void BoardView::printMiddle(GameBoard& board, const vector<shared_ptr<Player>>& players) {
 
+    const int TILE_WIDTH = 10;
+    const int INNER_WIDTH = TILE_WIDTH * 9;
+
     int left = 39;
     int right = 11;
 
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 16; i++) {
 
         auto L = formatTile2Line(board.getTileAt(left--), players);
         auto R = formatTile2Line(board.getTileAt(right++), players);
 
         // ===== BARIS 1 =====
-        cout << "|";
-        cout << L.first;
+        cout << "|" << L.first;
 
-        // ===== CENTER (langsung cout) =====
         if (i == 0) cout << "        ==================================        ";
         else if (i == 1) cout << "        ||          NIMONSPOLI          ||        ";
         else if (i == 2) cout << "        ==================================        ";
-        else if (i == 3) cout << string(72, ' ');
+        else if (i == 3) cout << string(INNER_WIDTH, ' ');
         else if (i == 4) {
             string t = "        TURN " + to_string(board.getCurrentTurnNumber()) +
                        " / " + to_string(board.getMaxTurn());
-            cout << t << string(72 - t.length(), ' ');
+            cout << t << string(INNER_WIDTH - t.length(), ' ');
         }
-        else if (i == 5) cout << string(72, ' ');
+        else if (i == 5) cout << string(INNER_WIDTH, ' ');
         else if (i == 6) cout << "        ----------------------------------        ";
         else if (i == 7) cout << "        LEGENDA KEPEMILIKAN & STATUS      ";
         else if (i == 8) cout << "        P1-P4 : Properti milik Pemain     ";
-        else if (i == 9) cout << "        (1)-(4): Bidak                    ";
 
-        cout << R.first;
-        cout << "|" << endl;
+        cout << R.first << "|" << endl;
 
         // ===== BARIS 2 =====
-        cout << "|";
-        cout << L.second;
-        cout << string(90 - L.second.length(), ' ');
-        cout << R.second;
-        cout << "|" << endl;
+        cout << "|" << L.second;
+        cout << string(INNER_WIDTH, ' ');
+        cout << R.second << "|" << endl;
     }
 }
 
@@ -182,11 +185,9 @@ void BoardView::showBoard(GameBoard& board, const vector<shared_ptr<Player>>& pl
 
     printTop(board, players);
 
-    cout << "+--------------------------------------------------------------+\n";
 
     printMiddle(board, players);
 
-    cout << "+--------------------------------------------------------------+\n";
 
     printBottom(board, players);
 }
