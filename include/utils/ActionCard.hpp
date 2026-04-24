@@ -36,9 +36,9 @@ public:
     ChanceCard(ActionCardType t, int v, std::string d);
     void execute(Player* player, GameContext* ctx) override;
     std::string getDescription() override;
-    std::string getCardType() const override;
-    ActionCardType getType() const;
-    int getValue() const;
+    std::string getCardType() const override { return "ChanceCard"; }
+    ActionCardType getType() const { return type; }
+    int getValue() const { return value; }
 };
 
 class CommunityCard : public ActionCard {
@@ -51,9 +51,9 @@ public:
     CommunityCard(ActionCardType t, int v, std::string d);
     void execute(Player* player, GameContext* ctx) override;
     std::string getDescription() override;
-    std::string getCardType() const override;
-    ActionCardType getType() const;
-    int getValue() const;
+    std::string getCardType() const override { return "CommunityCard"; }
+    ActionCardType getType() const { return type; }
+    int getValue() const { return value; }
 };
 
 #endif

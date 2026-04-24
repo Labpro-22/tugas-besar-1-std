@@ -42,11 +42,13 @@ void GameSaver::writePlayerStates(ofstream& out, const vector<shared_ptr<Player>
             string type = c->getCardType();
             out << " " << type;
 
-            bool hasValue = (type == "MoveCard" || type == "DiscountCard" || type == "TeleportCard");
+            bool hasValue = (type == "MOVE" || type == "DISCOUNT" || type == "TELEPORT"
+                             || type == "MoveCard" || type == "DiscountCard" || type == "TeleportCard");
             if (hasValue) out << " " << c->getValue();
             else out << " -";
 
-            bool hasDuration = (type == "DiscountCard");
+            bool hasDuration = (type == "DISCOUNT" || type == "SHIELD"
+                                || type == "DiscountCard" || type == "ShieldCard");
             if (hasDuration) out << " " << c->getRemainingDuration();
             else out << " -";
         }

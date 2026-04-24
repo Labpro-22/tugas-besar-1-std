@@ -2,17 +2,31 @@
 #include "../../include/utils/SkillCard.hpp"
 #include "../../include/models/Player.hpp"
 #include "../../include/core/GameContext.hpp"
+#include "../../include/utils/CardDeck.hpp"
+
 
 #include <cstdlib>
 
 SkillCardManager::SkillCardManager(int maxSize) {
     maxHandSize = (maxSize > 0) ? static_cast<size_t>(maxSize) : static_cast<size_t>(0);
-    populateDeck(36);
-    skillDeck.shuffle();
 }
 
-SkillCardManager::~SkillCardManager() {
-    skillDeck.deleteAllCards();
+void SkillCardManager::initDeck() {
+    // Stok sesuai spec
+    for (int i = 0; i < 4; i++) 
+        skillDeck.addCard(new MoveCard(rand() % 12 + 1));
+    for (int i = 0; i < 3; i++) 
+        skillDeck.addCard(new DiscountCard(rand() % 100 + 1));
+    for (int i = 0; i < 2; i++) 
+        skillDeck.addCard(new ShieldCard());
+    for (int i = 0; i < 2; i++) 
+        skillDeck.addCard(new TeleportCard(rand() % 40));
+    for (int i = 0; i < 2; i++) 
+        skillDeck.addCard(new LassoCard());
+    for (int i = 0; i < 2; i++) 
+        skillDeck.addCard(new DemolitionCard());
+
+    skillDeck.shuffle();
 }
 
 bool SkillCardManager::isValidIndex(Player* player, int idx) {
@@ -29,53 +43,42 @@ void SkillCardManager::distributeCardToAll(vector<Player*> players) {
     }
 }
 
-void SkillCardManager::distributeCardTo(Player* player) {
-    if (player == nullptr) {
-        return;
-    }
+SkillCard* SkillCardManager::distributeCardTo(Player* player) {
+    if (!player) return nullptr;
 
-    if (player->getHand().size() >= maxHandSize) {
-        return;
-    }
-
+    // drawTop() otomatis reshuffle kalau deck kosong
     SkillCard* card = skillDeck.drawTop();
-    if (card == nullptr) {
-        return;
-    }
+    if (!card) return nullptr;
 
     player->receiveCard(card);
+
+    // Return card kalau overflow (hand penuh), sinyal ke caller untuk drop
+    if (player->getHand().size() > maxHandSize) {
+        return card;
+    }
+
+    return nullptr;
 }
 
 void SkillCardManager::useCard(Player* player, int idx, GameContext* ctx) {
-    if (player == nullptr || ctx == nullptr) {
-        return;
-    }
-
+    if (!player || !ctx) return;
     if (player->hasUsedCard() || player->hasRolled()) return;
-
-    if (!isValidIndex(player, idx)) {
-        return;
-    }
+    if (player->getStatus() == JAILED) return;
+    if (!isValidIndex(player, idx)) return;
 
     SkillCard* card = player->removeCard(idx);
-    if (card == nullptr) {
-        return;
-    }
+    if (!card) return;
 
     card->activate(player, ctx);
-
     player->markCardUsed();
 
-    skillDeck.discard(card);
+    skillDeck.discard(card); // masuk discard, bukan delete
 }
 
 void SkillCardManager::dropCard(Player* player, int idx) {
-    if (!isValidIndex(player, idx)) {
-        return;
-    }
-
+    if (!isValidIndex(player, idx)) return;
     SkillCard* card = player->removeCard(idx);
-    skillDeck.discard(card);
+    if (card) skillDeck.discard(card);
 }
 
 void SkillCardManager::decrementDurations(Player* player) {
@@ -90,19 +93,3 @@ void SkillCardManager::decrementDurations(Player* player) {
     }
 }
 
-SkillCard* SkillCardManager::generateCard() {
-    int r = rand() % 6;
-    //blom final
-    if (r == 0) return new MoveCard(rand() % 6 + 1);
-    if (r == 1) return new ShieldCard();
-    if (r == 2) return new TeleportCard(rand() % 40);
-    if (r == 3) return new DiscountCard((rand() % 41) + 10); 
-    if (r == 4) return new LassoCard();
-    return new DemolitionCard();
-}
-
-void SkillCardManager::populateDeck(size_t cardCount) {
-    for (size_t i = 0; i < cardCount; ++i) {
-        skillDeck.addToDeck(generateCard());
-    }
-}

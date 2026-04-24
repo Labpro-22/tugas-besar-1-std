@@ -20,7 +20,7 @@ private:
     int currentPlayerIndex;
     int currentTurnNumber = 1;
     int maxTurn = 0;
-    CardDeck<SkillCard*>* skillDeck = nullptr;
+    CardDeck<SkillCard>* skillDeck = nullptr;
 
 public:
     GameBoard();
@@ -43,8 +43,8 @@ public:
     int getMaxTurn() const;
     void setMaxTurn(int m);
 
-    CardDeck<SkillCard*>* getSkillDeck() const;
-    void setSkillDeck(CardDeck<SkillCard*>* d);
+    CardDeck<SkillCard>* getSkillDeck() const;
+    void setSkillDeck(CardDeck<SkillCard>* d);
 
     void setCurrentPlayerByUsername(const std::string& username);
     void setTurnOrder(const std::vector<std::string>& order);

@@ -1,104 +1,81 @@
-#ifndef CARDSDECK_HPP
-#define CARDSDECK_HPP
+// include/utils/CardDeck.hpp
+#ifndef CARDDECK_HPP
+#define CARDDECK_HPP
 
-#include <cstdlib>
-#include <type_traits>
-#include <utility>
 #include <vector>
+#include <algorithm>
+#include <cstdlib>
+using namespace std;
 
 template <typename T>
 class CardDeck {
 private:
-    std::vector<T> deck;
-    std::vector<T> discardPile;
+    vector<T*> deck;
+    vector<T*> discardPile;
 
 public:
-    CardDeck() = default;
+    CardDeck() {}
 
-    void addToDeck(T card) {
+    ~CardDeck() {
+        for (T* card : deck) delete card;
+        for (T* card : discardPile) delete card;
+    }
+
+    void addCard(T* card) {
         if (card != nullptr) {
             deck.push_back(card);
         }
     }
 
-    void shuffle() {
-        if (deck.size() < 2) {
-            return;
-        }
-
-        for (size_t i = deck.size() - 1; i > 0; --i) {
-            size_t j = static_cast<size_t>(std::rand() % (i + 1));
-            std::swap(deck[i], deck[j]);
-        }
+    bool isEmpty() const {
+        return deck.empty();
     }
 
-    T drawTop() {
-        if (deck.empty()) {
+    T* drawTop() {
+        if (isEmpty()) {
             reshuffleDiscardIntoDeck();
         }
+        if (isEmpty()) return nullptr;
 
-        if (deck.empty()) {
-            return T{};
-        }
-
-        T card = deck.back();
+        T* card = deck.back();
         deck.pop_back();
         return card;
     }
 
-    void discard(T card) {
+    void discard(T* card) {
         if (card != nullptr) {
             discardPile.push_back(card);
         }
     }
 
     void reshuffleDiscardIntoDeck() {
-        while (!discardPile.empty()) {
-            deck.push_back(discardPile.back());
-            discardPile.pop_back();
+        if (discardPile.empty()) return;
+
+        for (T* card : discardPile) {
+            deck.push_back(card);
         }
-
-        shuffle();
-    }
-
-    bool isEmpty() const {
-        return deck.empty() && discardPile.empty();
-    }
-
-    size_t deckSize() const {
-        return deck.size();
-    }
-
-    size_t discardSize() const {
-        return discardPile.size();
-    }
-
-    void clear() {
-        deck.clear();
         discardPile.clear();
-    }
 
-    const std::vector<T>& getDeck() const {
-        return deck;
-    }
-
-    const std::vector<T>& getDiscardPile() const {
-        return discardPile;
-    }
-
-    void deleteAllCards() {
-        if constexpr (std::is_pointer<T>::value) {
-            for (T card : deck) {
-                delete card;
-            }
-
-            for (T card : discardPile) {
-                delete card;
-            }
+        // Fisher-Yates shuffle
+        for (int i = (int)deck.size() - 1; i > 0; i--) {
+            int j = rand() % (i + 1);
+            swap(deck[i], deck[j]);
         }
-
-        clear();
     }
+
+    void shuffle() {
+        for (int i = (int)deck.size() - 1; i > 0; i--) {
+            int j = rand() % (i + 1);
+            swap(deck[i], deck[j]);
+        }
+    }
+
+    int size() const { return (int)deck.size(); }
+    int discardSize() const { return (int)discardPile.size(); }
+
+    // Untuk save/load — backend butuh akses isi deck
+    const vector<T*>& getDeck() const { return deck; }
+    const vector<T*>& getDiscardPile() const { return discardPile; }
 };
 
 #endif

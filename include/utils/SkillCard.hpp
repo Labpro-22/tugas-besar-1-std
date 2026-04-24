@@ -22,10 +22,10 @@ public:
 
     void decrementDuration();
 
-    virtual string getCardType() const;
-    int getValue() const;
-    int getRemainingDuration() const;
-    void setRemainingDuration(int d);
+    string getCardType() const { return cardType; }
+    int getValue() const { return value; }
+    int getRemainingDuration() const { return remainingDuration; }
+    void setRemainingDuration(int d) { remainingDuration = d; }
 };
 
 // Turunan Skillcard
@@ -35,7 +35,6 @@ public:
     MoveCard(int steps);
     void activate(Player* player, GameContext* ctx) override;
     string getDescription() override;
-    string getCardType() const override;
 };
 
 class ShieldCard : public SkillCard {
@@ -43,7 +42,6 @@ public:
     ShieldCard();
     void activate(Player* player, GameContext* ctx) override;
     string getDescription() override;
-    string getCardType() const override;
 };
 
 class TeleportCard : public SkillCard {
@@ -51,7 +49,6 @@ public:
     TeleportCard(int target);
     void activate(Player* player, GameContext* ctx) override;
     string getDescription() override;
-    string getCardType() const override;
 };
 
 class DiscountCard : public SkillCard {
@@ -59,7 +56,6 @@ public:
     DiscountCard(int percent);
     void activate(Player* player, GameContext* ctx) override;
     string getDescription() override;
-    string getCardType() const override;
 };
 
 class LassoCard : public SkillCard {
@@ -67,7 +63,6 @@ public:
     LassoCard();
     void activate(Player* player, GameContext* ctx) override;
     string getDescription() override;
-    string getCardType() const override;
 };
 
 class DemolitionCard : public SkillCard {
@@ -75,7 +70,6 @@ public:
     DemolitionCard();
     void activate(Player* player, GameContext* ctx) override;
     string getDescription() override;
-    string getCardType() const override;
 };
 
 #endif

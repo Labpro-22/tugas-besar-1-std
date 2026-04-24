@@ -54,17 +54,17 @@ SkillCard* buildSkillCard(const string& type, const string& valTok, const string
                    : parseInt(durTok, "skill card duration");
 
     SkillCard* card = nullptr;
-    if (type == "MoveCard") {
+    if (type == "MOVE" || type == "MoveCard") {
         card = new MoveCard(value);
-    } else if (type == "DiscountCard") {
+    } else if (type == "DISCOUNT" || type == "DiscountCard") {
         card = new DiscountCard(value);
-    } else if (type == "ShieldCard") {
+    } else if (type == "SHIELD" || type == "ShieldCard") {
         card = new ShieldCard();
-    } else if (type == "TeleportCard") {
+    } else if (type == "TELEPORT" || type == "TeleportCard") {
         card = new TeleportCard(value);
-    } else if (type == "LassoCard") {
+    } else if (type == "LASSO" || type == "LassoCard") {
         card = new LassoCard();
-    } else if (type == "DemolitionCard") {
+    } else if (type == "DEMOLITION" || type == "DemolitionCard") {
         card = new DemolitionCard();
     } else {
         throw FileFormatException("Unknown skill card type: " + type);
@@ -302,14 +302,14 @@ bool GameLoader::loadSave(const string& filename,
     readPropertyStates(in, board);
 
     vector<SkillCard*> loadedDeck = readDeckState(in);
-    CardDeck<SkillCard*>* targetDeck = board->getSkillDeck();
+    CardDeck<SkillCard>* targetDeck = board->getSkillDeck();
     if (targetDeck != nullptr) {
         while (!targetDeck->isEmpty()) {
             SkillCard* c = targetDeck->drawTop();
             delete c;
         }
         for (size_t i = 0; i < loadedDeck.size(); ++i) {
-            targetDeck->addToDeck(loadedDeck[i]);
+            targetDeck->addCard(loadedDeck[i]);
         }
     } else {
         for (size_t i = 0; i < loadedDeck.size(); ++i) {
