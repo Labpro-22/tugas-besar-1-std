@@ -307,9 +307,13 @@ void ConfigParser::parseActionConfig(const string& filename) {
             }
         } else if (jenis == "KARTU" || jenis == "CARD") {
             if (upCode == "DNU" || upCode == "DU") {
-                tile = new CommunityChestTile(position, name, code, color);
+                CommunityChestTile* cc = new CommunityChestTile(position, name, code, color);
+                cc->setDeck(communityDeck);
+                tile = cc;
             } else {
-                tile = new ChanceTile(position, name, code, color);
+                ChanceTile* ch = new ChanceTile(position, name, code, color);
+                ch->setDeck(chanceDeck);
+                tile = ch;
             }
         } else if (jenis == "PAJAK" || jenis == "TAX") {
             if (upCode == "PBM") {

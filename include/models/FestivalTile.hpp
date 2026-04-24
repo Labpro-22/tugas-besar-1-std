@@ -14,5 +14,5 @@ public:
     void applyFestivalEffect(Player* player, Property* property);
     void updateDuration();
 
-    void executeAction(Player* player) override;
+    void executeAction(Player* player, GameContext* ctx = nullptr) override;
 };

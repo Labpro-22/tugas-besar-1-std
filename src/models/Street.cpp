@@ -76,12 +76,14 @@ int Street::calculateRent(Player* visitor) {
     }
 
     int houseCount = 0;
-    if(houseCount = std::stoi(buildingCount)) {
-        houseCount = std::stoi(buildingCount);
-    } else if (buildingCount == "H") {
+    if (buildingCount == "H") {
         houseCount = 5; // 5 untuk hotel
     } else {
-        houseCount = 0; // default ke 0 kalau parsing gagal
+        try {
+            houseCount = std::stoi(buildingCount);
+        } catch (...) {
+            houseCount = 0;
+        }
     }
     int baseRent = getRent(houseCount);
     return baseRent * festivalMultiplier;

@@ -25,5 +25,5 @@ public:
     JailResult attemptEscape(Player* player);
     void payFine(Player* player);
 
-    void executeSpecial(Player* player) override;
+    void executeSpecial(Player* player, GameContext* ctx = nullptr) override;
 };

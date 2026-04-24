@@ -40,6 +40,6 @@ public:
     virtual void redeem();
 
 
-    void onLand(Player* player) override;
+    void onLand(Player* player, GameContext* ctx = nullptr) override;
     void onPass(Player* player) override;
 };

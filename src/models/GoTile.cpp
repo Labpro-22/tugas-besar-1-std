@@ -2,7 +2,7 @@
 #include "../include/models/Player.hpp"
 
 GoTile::GoTile(int position, const std::string& name, const std::string& code, const std::string& color, int salary)
-    : SpecialTile(position, name, "GO", "DEFAULT", SpecialType::GO), salary(salary) {
+    : SpecialTile(position, name, code, color, SpecialType::GO), salary(salary) {
 }
 
 int GoTile::getSalary() const {
@@ -27,6 +27,9 @@ void GoTile::onPass(Player* player) {
     }
 }
 
-void GoTile::executeSpecial(Player* player) {
-    (void)player;
+void GoTile::executeSpecial(Player* player, GameContext* ctx) {
+    (void)ctx;
+    if (player != nullptr) {
+        giveSalary(player);
+    }
 }

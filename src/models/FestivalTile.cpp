@@ -4,7 +4,7 @@
 
 
 FestivalTile::FestivalTile(int position, const std::string& name, const std::string& code, const std::string& color)
-    : ActionTile(position, name, "FES", "DEFAULT", ActionType::FESTIVAL) {
+    : ActionTile(position, name, code, color, ActionType::FESTIVAL) {
 }
 
 void FestivalTile::applyFestivalEffect(Player* player, Property* property) {
@@ -12,17 +12,20 @@ void FestivalTile::applyFestivalEffect(Player* player, Property* property) {
         return;
     }
 
-    if (property->getFestivalDuration() == 0) {
-        property->setFestivalMultiplier(2);
-        property->setFestivalDuration(3); 
+    int currentMult = property->getFestivalMultiplier();
+    if (currentMult < 8) {
+        property->setFestivalMultiplier(currentMult * 2);
     }
+    // Kalau max (8x) atau baru pertama (1x), tetap reset durasi
+    property->setFestivalDuration(3);
 }
 
 void FestivalTile::updateDuration() {
     // Update logic for festival duration tracking
 }
 
-void FestivalTile::executeAction(Player* player) {
+void FestivalTile::executeAction(Player* player, GameContext* ctx) {
+    (void)ctx;
     if (player != nullptr) {
         // Apply festival effect to all properties owned by the player
         // This will be coordinated with the game controller

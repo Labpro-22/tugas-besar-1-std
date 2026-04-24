@@ -52,7 +52,7 @@ void MovementHandler::movePlayer(Player* player, int steps) {
     if (board != nullptr) {
         Tile* tile = board->getTileAt(newPos);
         if (tile != nullptr) {
-            tile->onLand(player);
+            tile->onLand(player, ctx);
         }
     }
 }
@@ -74,7 +74,7 @@ void MovementHandler::teleportPlayer(Player* player, int target) {
     if (board != nullptr) {
         Tile* tile = board->getTileAt(normalizedTarget);
         if (tile != nullptr) {
-            tile->onLand(player);
+            tile->onLand(player, ctx);
         }
     }
 }
@@ -99,7 +99,7 @@ void MovementHandler::pullPlayer(Player* target, int toPosition) {
     if (board != nullptr) {
         Tile* tile = board->getTileAt(normalizedTarget);
         if (tile != nullptr) {
-            tile->onLand(target);
+            tile->onLand(target, ctx);
         }
     }
 }

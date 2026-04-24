@@ -64,7 +64,8 @@ void TaxTile::collectTax(Player* player) {
     }
 }
 
-void TaxTile::executeAction(Player* player) {
+void TaxTile::executeAction(Player* player, GameContext* ctx) {
+    (void)ctx;
     if (player != nullptr) {
         collectTax(player);
     }

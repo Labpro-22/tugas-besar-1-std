@@ -22,9 +22,9 @@ public:
     SpecialType getSpecialType() const;
     void setSpecialType(SpecialType type);
 
-    virtual void executeSpecial(Player* player) = 0;
+    virtual void executeSpecial(Player* player, GameContext* ctx = nullptr) = 0;
 
-    void executeAction(Player* player) override;
+    void executeAction(Player* player, GameContext* ctx = nullptr) override;
     virtual void onPass(Player* player) override;  
 
 

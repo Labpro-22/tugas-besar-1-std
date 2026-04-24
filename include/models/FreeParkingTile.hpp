@@ -8,5 +8,5 @@ public:
     ~FreeParkingTile() = default;
 
     void rest(Player* player);
-    void executeSpecial(Player* player) override;
+    void executeSpecial(Player* player, GameContext* ctx = nullptr) override;
 };

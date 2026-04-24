@@ -30,5 +30,5 @@ public:
     int calculateTax(Player* player) const;
     void collectTax(Player* player);
 
-    void executeAction(Player* player) override;
+    void executeAction(Player* player, GameContext* ctx = nullptr) override;
 };

@@ -2,7 +2,7 @@
 #include "../include/models/Player.hpp"
 
 FreeParkingTile::FreeParkingTile(int position, const std::string& name, const std::string& code, const std::string& color)
-    : SpecialTile(position, name, "BBP", "DEFAULT", SpecialType::FREE_PARKING) {
+    : SpecialTile(position, name, code, color, SpecialType::FREE_PARKING) {
 }
 
 void FreeParkingTile::rest(Player* player) {
@@ -12,7 +12,8 @@ void FreeParkingTile::rest(Player* player) {
     }
 }
 
-void FreeParkingTile::executeSpecial(Player* player) {
+void FreeParkingTile::executeSpecial(Player* player, GameContext* ctx) {
+    (void)ctx;
     if (player != nullptr) {
         rest(player);
     }

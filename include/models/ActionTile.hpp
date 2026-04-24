@@ -24,9 +24,9 @@ public:
     ActionType getActionType() const;
     void setActionType(ActionType type);
 
-    virtual void executeAction(Player* player) = 0;
+    virtual void executeAction(Player* player, GameContext* ctx = nullptr) = 0;
 
-    void onLand(Player* player) override;
+    void onLand(Player* player, GameContext* ctx = nullptr) override;
     virtual void onPass(Player* player) override;
 
 };

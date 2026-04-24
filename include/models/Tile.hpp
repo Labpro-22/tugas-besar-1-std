@@ -4,6 +4,7 @@
 
 // Forward declaration
 class Player;
+class GameContext;
 
 class Tile {
 protected:
@@ -22,6 +23,6 @@ public:
     std::string getCode() const;
     void setCode(const std::string& c);
 
-    virtual void onLand(Player* player) = 0;
+    virtual void onLand(Player* player, GameContext* ctx = nullptr) = 0;
     virtual void onPass(Player* player) = 0;
 };

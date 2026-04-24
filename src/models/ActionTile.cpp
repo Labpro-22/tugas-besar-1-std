@@ -14,9 +14,9 @@ void ActionTile::setActionType(ActionType type) {
     actionType = type;
 }
 
-void ActionTile::onLand(Player* player) {
+void ActionTile::onLand(Player* player, GameContext* ctx) {
     if (player != nullptr) {
-        executeAction(player);
+        executeAction(player, ctx);
     }
 }
 
@@ -24,12 +24,4 @@ void ActionTile::onLand(Player* player) {
 void ActionTile::onPass(Player* player) {
     (void)player;
     // Default implementation does nothing when passing
-}
-
-std::string getCode() {
-    return "DF"; // default aksi
-}
-
-std::string getCategory() {
-    return "DEFAULT";
 }
