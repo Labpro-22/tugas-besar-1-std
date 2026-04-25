@@ -42,4 +42,5 @@ public:
 
     void onLand(Player* player, GameContext* ctx = nullptr) override;
     void onPass(Player* player) override;
+    
 };

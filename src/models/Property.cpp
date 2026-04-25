@@ -69,8 +69,7 @@ void Property::redeem() {
 }
 
 void Property::onLand(Player* player, GameContext* ctx) {
-    (void)ctx;
-    if (player == nullptr) return;
+    if (!player) return;
 
     if (status == StatusType::OWNED && owner != player->getUsername()) {
         int rent = calculateRent(player);

@@ -37,3 +37,21 @@ void Utility::mortgage() {
 void Utility::redeem() {
     Property::redeem();
 }
+
+void Utility::onLand(Player* player, GameContext* ctx) {
+    if (!player) return;
+
+    if (status == StatusType::BANK) {
+        // auto owned nanti
+        return;
+    }
+
+    if (status == StatusType::OWNED && owner != player->getUsername()) {
+        int rent = calculateRent(player);
+        (void)rent;
+    }
+}
+
+void Utility::onPass(Player* player) {
+    // Default: no action when passing
+}

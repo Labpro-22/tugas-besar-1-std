@@ -36,3 +36,21 @@ void Railroad::mortgage() {
 void Railroad::redeem() {
     Property::redeem();
 }
+
+void Railroad::onLand(Player* player, GameContext* ctx) {
+    if (!player) return;
+
+    if (status == StatusType::BANK) {
+        // ownership logic nanti di GameController
+        return;
+    }
+
+    if (status == StatusType::OWNED && owner != player->getUsername()) {
+        int rent = calculateRent(player);
+        (void)rent;
+    }
+}
+
+void Railroad::onPass(Player* player) {
+    // Default: no action when passing
+}

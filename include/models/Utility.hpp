@@ -18,4 +18,7 @@ public:
     int calculateRent(Player* visitor) override;
     void mortgage() override;
     void redeem() override;
+
+    void onLand(Player* player, GameContext* ctx = nullptr) override;
+    void onPass(Player* player) override;
 };
