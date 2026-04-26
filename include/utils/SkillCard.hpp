@@ -2,74 +2,84 @@
 #define SKILLCARD_H
 
 #include <string>
-using namespace std;
 
+// Forward declarations
 class Player;
 class GameContext;
 
 class SkillCard {
 protected:
-    string cardType;
-    int value;
-    int remainingDuration;
+    std::string cardType;
+    int value;              
+    int remainingDuration;  
 
 public:
-    SkillCard(string type, int val, int duration);
+    SkillCard(const std::string& type, int val, int duration);
     virtual ~SkillCard() {}
 
+    // Aktifkan efek kartu
     virtual void activate(Player* player, GameContext* ctx) = 0;
-    virtual string getDescription() = 0;
 
+    // Deskripsi singkat untuk display 
+    virtual std::string getDescription() const = 0;
+
+    // Kurangi sisa durasi 
     void decrementDuration();
 
-    string getCardType() const { return cardType; }
-    int getValue() const { return value; }
-    int getRemainingDuration() const { return remainingDuration; }
-    void setRemainingDuration(int d) { remainingDuration = d; }
+    std::string getCardType() const         { return cardType; }
+    int         getValue() const            { return value; }
+    int         getRemainingDuration() const { return remainingDuration; }
+    void        setRemainingDuration(int d) { remainingDuration = d; }
 };
 
-// Turunan Skillcard
+
+// MoveCard: maju sejumlah langkah acak (ditentukan saat kartu dibuat)
 
 class MoveCard : public SkillCard {
 public:
-    MoveCard(int steps);
+    explicit MoveCard(int steps);
     void activate(Player* player, GameContext* ctx) override;
-    string getDescription() override;
+    std::string getDescription() const override;
 };
 
+// DiscountCard: diskon acak (0 - 100%) properti pada giliran ini
+class DiscountCard : public SkillCard {
+public:
+    explicit DiscountCard(int percent);
+    void activate(Player* player, GameContext* ctx) override;
+    std::string getDescription() const override;
+};
+
+// ShieldCard: kebal satu kali tagihan/sanksi selama giliran
 class ShieldCard : public SkillCard {
 public:
     ShieldCard();
     void activate(Player* player, GameContext* ctx) override;
-    string getDescription() override;
+    std::string getDescription() const override;
 };
 
+// TeleportCard: pindah kemanapun di papan
 class TeleportCard : public SkillCard {
 public:
-    TeleportCard(int target);
+    TeleportCard();
     void activate(Player* player, GameContext* ctx) override;
-    string getDescription() override;
+    std::string getDescription() const override;
 };
 
-class DiscountCard : public SkillCard {
-public:
-    DiscountCard(int percent);
-    void activate(Player* player, GameContext* ctx) override;
-    string getDescription() override;
-};
-
+// LassoCard: tarik satu pemain lawan di depan ke posisi kita
 class LassoCard : public SkillCard {
 public:
     LassoCard();
     void activate(Player* player, GameContext* ctx) override;
-    string getDescription() override;
+    std::string getDescription() const override;
 };
 
+// DemolitionCard: hancurkan satu bangunan milik lawan
 class DemolitionCard : public SkillCard {
 public:
     DemolitionCard();
     void activate(Player* player, GameContext* ctx) override;
-    string getDescription() override;
+    std::string getDescription() const override;
 };
 
 #endif

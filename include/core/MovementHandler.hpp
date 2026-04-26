@@ -1,15 +1,7 @@
 #ifndef MOVEMENTHANDLER_H
 #define MOVEMENTHANDLER_H
 
-#include "../models/JailTile.hpp" 
-#include "../models/Player.hpp"
-#include "../utils/Dice.hpp"
-#include "../models/Tile.hpp"
-#include "../models/GameBoard.hpp"
-#include "../models/JailTile.hpp"
-#include "../models/GoTile.hpp"
-#include "GameContext.hpp"
-#include "../data/TransactionLogger.hpp"
+#include "JailTile.hpp"   
 
 class GameBoard;
 class Player;

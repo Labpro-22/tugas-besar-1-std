@@ -1,6 +1,6 @@
 #include <cstdlib>
 #include <ctime>
-#include "../../include/utils/Dice.hpp"
+#include "Dice.hpp"
 
 Dice::Dice() {
     static bool seeded = false;
@@ -8,7 +8,6 @@ Dice::Dice() {
         srand(static_cast<unsigned>(time(nullptr)));
         seeded = true;
     }
-
     d1 = d2 = 1;
     isManualMode = false;
 }
@@ -25,10 +24,8 @@ void Dice::setManual(int a, int b) {
     isManualMode = true;
 }
 
-int Dice::getTotal() { return d1 + d2; }
-bool Dice::isDouble() { return d1 == d2; }
-
-int Dice::getDie1() { return d1; }
-int Dice::getDie2() { return d2; }
-bool Dice::getManualMode() { return isManualMode; 
-}
+int Dice::getTotal() const { return d1 + d2; }
+bool Dice::isDouble() const { return d1 == d2; }
+int Dice::getDie1() const { return d1; }
+int Dice::getDie2() const { return d2; }
+bool Dice::getManualMode() const { return isManualMode; }

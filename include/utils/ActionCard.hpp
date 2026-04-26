@@ -1,23 +1,24 @@
 #ifndef ACTIONCARD_H
 #define ACTIONCARD_H
 
-#pragma once
 #include <string>
 
+// Forward declarations
 class Player;
-class GameContext;  // satu context
+class GameContext;
+
 
 enum class ActionCardType {
-    GAIN_MONEY,
-    PAY_MONEY,
-    COLLECT_FROM_ALL,
-    PAY_TO_ALL,
-    MOVE,
-    TELEPORT,
-    GO_TO_JAIL,
-    GET_SKILL
+    GAIN_MONEY,        
+    PAY_MONEY,         
+    COLLECT_FROM_ALL,  
+    PAY_TO_ALL,        
+    NEAREST_RAILROAD,  
+    MOVE_BACKWARD,     
+    GO_TO_JAIL         
 };
 
+// Abstract 
 class ActionCard {
 public:
     virtual void execute(Player* player, GameContext* ctx) = 0;
@@ -26,6 +27,7 @@ public:
     virtual ~ActionCard() {}
 };
 
+// ChanceCard: Kartu Kesempatan
 class ChanceCard : public ActionCard {
 private:
     ActionCardType type;
@@ -41,6 +43,7 @@ public:
     int getValue() const { return value; }
 };
 
+// CommunityCard: Kartu Dana Umum
 class CommunityCard : public ActionCard {
 private:
     ActionCardType type;

@@ -1,8 +1,15 @@
-#include "../../include/utils/ActionCard.hpp"
-#include "../../include/models/Player.hpp"
-#include "../../include/core/GameContext.hpp"
-#include "../../include/core/SkillCardManager.hpp"
-#include "../../include/core/MovementHandler.hpp"
+#include "ActionCard.hpp"
+#include "Player.hpp"
+#include "GameContext.hpp"
+#include "GameBoard.hpp"
+#include "SkillCardManager.hpp"
+#include "MovementHandler.hpp"
+#include "Railroad.hpp"
+
+#include <string>
+#include <climits>
+
+using namespace std;
 
 ChanceCard::ChanceCard(ActionCardType t, int v, string d)
     : type(t), value(v), desc(d) {}
@@ -10,37 +17,84 @@ ChanceCard::ChanceCard(ActionCardType t, int v, string d)
 CommunityCard::CommunityCard(ActionCardType t, int v, string d)
     : type(t), value(v), desc(d) {}
 
-void ChanceCard::execute(Player* player, GameContext* ctx) {
-    if (player == nullptr || ctx == nullptr) {
-        return;
+
+// Helper cari posisi stasiun (Railroad) terdekat di depan player
+
+namespace {
+
+int findNearestRailroadPosition(Player* player, GameContext* ctx) {
+    if (!player || !ctx || !ctx->hasBoard()) return -1;
+
+    const auto& tiles = ctx->board->getTiles();
+    int boardSize = static_cast<int>(tiles.size());
+    int myPos = player->getPosition();
+
+    // Cari Railroad dengan jarak clockwise terkecil
+    int nearestPos  = -1;
+    int minDist     = INT_MAX;
+
+    for (const auto& tilePtr : tiles) {
+        if (!tilePtr) continue;
+        Railroad* rr = dynamic_cast<Railroad*>(tilePtr.get());
+        if (!rr) continue;
+
+        int rrPos = rr->getPosition();
+        int dist  = (rrPos - myPos + boardSize) % boardSize;
+        if (dist > 0 && dist < minDist) {
+            minDist    = dist;
+            nearestPos = rrPos;
+        }
     }
 
+    return nearestPos; // -1 jika tidak ada Railroad
+}
+
+} 
+
+
+
+void ChanceCard::execute(Player* player, GameContext* ctx) {
+    if (!player || !ctx) return;
+
     switch (type) {
+        case ActionCardType::NEAREST_RAILROAD: {
+            // Teleport ke stasiun terdekat 
+            if (!ctx->hasMovementHandler()) break;
+            int target = findNearestRailroadPosition(player, ctx);
+            if (target >= 0) {
+                ctx->movementHandler->teleportPlayer(player, target);
+            }
+            break;
+        }
+
+        case ActionCardType::MOVE_BACKWARD: {
+            if (!ctx->hasMovementHandler()) break;
+            int boardSize = ctx->getBoardSize();
+            int myPos     = player->getPosition();
+            int newPos    = (myPos - value + boardSize) % boardSize;
+            player->setPosition(newPos);
+            if (ctx->hasBoard()) {
+                auto* tile = ctx->board->getTileAt(newPos);
+                if (tile) tile->onLand(player, ctx);
+            }
+            break;
+        }
+
+        case ActionCardType::GO_TO_JAIL: {
+            if (!ctx->hasMovementHandler()) break;
+            ctx->movementHandler->sendToJail(player);
+            break;
+        }
+
         case ActionCardType::GAIN_MONEY:
             (*player) += value;
             break;
+
         case ActionCardType::PAY_MONEY:
             (*player) -= value;
             break;
-        case ActionCardType::MOVE:
-            if (ctx->movementHandler != nullptr) {
-                ctx->movementHandler->movePlayer(player, value);
-            }
-            break;
-        case ActionCardType::TELEPORT:
-            if (ctx->movementHandler != nullptr) {
-                ctx->movementHandler->teleportPlayer(player, value);
-            }
-            break;
-        case ActionCardType::GO_TO_JAIL:
-            if (ctx->movementHandler != nullptr) {
-                ctx->movementHandler->sendToJail(player);
-            }
-            break;
-        case ActionCardType::GET_SKILL:
-            if (ctx->skillCardManager != nullptr) {
-                ctx->skillCardManager->distributeCardTo(player);
-            }
+
+        default:
             break;
     }
 }
@@ -51,25 +105,39 @@ void CommunityCard::execute(Player* player, GameContext* ctx) {
     if (!player || !ctx) return;
 
     switch (type) {
-        case ActionCardType::COLLECT_FROM_ALL:
+        case ActionCardType::COLLECT_FROM_ALL: {
             for (Player* other : ctx->allPlayers) {
-                if (other != player && other->getStatus() == ACTIVE) {
-                    (*other) -= value;
-                    (*player) += value;
-                }
+                if (!other)                            continue;
+                if (other == player)                   continue;
+                if (other->getStatus() != ACTIVE)     continue;
+
+                (*other)  -= value;
+                (*player) += value;
             }
             break;
-        case ActionCardType::PAY_TO_ALL:
+        }
+
+        case ActionCardType::PAY_TO_ALL: {
+            // Shield berlaku untuk total pembayaran (satu kali blok).
             for (Player* other : ctx->allPlayers) {
-                if (other != player && other->getStatus() == ACTIVE) {
-                    (*player) -= value;
-                    (*other) += value;
-                }
+                if (!other)                            continue;
+                if (other == player)                   continue;
+                if (other->getStatus() != ACTIVE)     continue;
+
+                (*player) -= value; // operator-= cek shield per panggilan
+                (*other)  += value;
             }
             break;
+        }
+
         case ActionCardType::PAY_MONEY:
             (*player) -= value;
             break;
+
+        case ActionCardType::GAIN_MONEY:
+            (*player) += value;
+            break;
+
         default:
             break;
     }

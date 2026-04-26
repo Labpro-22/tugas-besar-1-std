@@ -1,5 +1,12 @@
-#include "../../include/core/MovementHandler.hpp"
-
+#include "MovementHandler.hpp"
+#include "Player.hpp"
+#include "Dice.hpp"
+#include "Tile.hpp"
+#include "GameBoard.hpp"
+#include "JailTile.hpp"
+#include "GoTile.hpp"
+#include "GameContext.hpp"
+#include "TransactionLogger.hpp"
 
 using namespace std;
 
