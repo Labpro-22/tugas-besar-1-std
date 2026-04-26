@@ -1,44 +1,74 @@
 #ifndef GAMECONTEXT_H
 #define GAMECONTEXT_H
-#include "../models/GameBoard.hpp"
-#include <vector>
-using namespace std;
 
+#include <vector>
+
+// Forward declarations 
 class GameBoard;
 class TurnManager;
 class MovementHandler;
 class Player;
 class SkillCardManager;
 class Dice;
+class GameView;
+class BuildingManager;
+class TransactionLogger;
+
+// GameContext membawa referensi ke fungsi SkillCard, ActionCard, dan Tile saat execute().
+//pointer di manage oleh GameController.
 
 class GameContext {
 public:
-    GameBoard* board;
-    MovementHandler* movementHandler;
-    TurnManager* turnManager;
-    SkillCardManager* skillCardManager;
-    Dice* lastDice;
-    std::vector<Player*> allPlayers;
+    GameBoard*         board            = nullptr;
+    MovementHandler*   movementHandler  = nullptr;
+    TurnManager*       turnManager      = nullptr;
+    SkillCardManager*  skillCardManager = nullptr;
+    BuildingManager*   buildingManager  = nullptr;
+    Dice*              lastDice         = nullptr;  
+    GameView*          gameView         = nullptr;  
+    TransactionLogger* logger           = nullptr;  
+    std::vector<Player*> allPlayers;                
 
-    GameContext()
-        : board(nullptr), movementHandler(nullptr), turnManager(nullptr),
-          skillCardManager(nullptr), lastDice(nullptr), allPlayers() {}
+    GameContext() = default;
 
-    bool hasBoard() const { return board != nullptr; }
-    bool hasMovementHandler() const { return movementHandler != nullptr; }
-    bool hasTurnManager() const { return turnManager != nullptr; }
-    bool hasSkillCardManager() const { return skillCardManager != nullptr; }
-    bool hasLastDice() const { return lastDice != nullptr; }
+    // Null check
+    bool hasBoard()            const { 
+        return board            
+        != nullptr; 
+    }
 
+    bool hasMovementHandler()  const { 
+        return movementHandler  
+        != nullptr; 
+    }
+    bool hasTurnManager()      const { 
+        return turnManager      
+        != nullptr; 
+    }
+    bool hasSkillCardManager() const { 
+        return skillCardManager 
+        != nullptr; 
+    }
+    bool hasBuildingManager()  const { 
+        return buildingManager  
+        != nullptr; 
+    }
+    bool hasLastDice()         const { 
+        return lastDice         
+        != nullptr; 
+    }
+    bool hasLogger()           const { 
+        return logger           
+        != nullptr; 
+    }
+
+    // Siap jalanin turn
     bool isReadyForTurn() const {
         return hasBoard() && hasMovementHandler() && hasTurnManager();
     }
 
-    // Helper supaya kartu tidak perlu akses board langsung
-    int getBoardSize() const {
-        if (board != nullptr && !board->getTiles().empty()) return board->getTiles().size();
-        return 40;
-    }
+    // Ukuran board dgn fallback
+    int getBoardSize() const;
 };
 
 #endif

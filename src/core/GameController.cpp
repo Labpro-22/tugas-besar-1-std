@@ -33,7 +33,7 @@ GameController::~GameController() {
 string GameController::startGame() {
     string msg = "Game berhasil dimulai!";
 
-    if (!loadFromConfig("../config")) {
+    if (!loadFromConfig("config")) {
         msg += "\nWARNING: gagal memuat config/, board kosong.";
     }
 
