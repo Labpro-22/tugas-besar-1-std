@@ -28,6 +28,7 @@ public:
     
     void addTile(std::unique_ptr<Tile> tile);
     Tile* getTileAt(int position) const;
+    int getTileCount() const;
 
     void addPlayer(std::shared_ptr<Player> player);
     std::shared_ptr<Player> getPlayerByUsername(const std::string& username) const;

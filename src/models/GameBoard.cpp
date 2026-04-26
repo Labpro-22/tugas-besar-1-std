@@ -18,6 +18,9 @@ Tile* GameBoard::getTileAt(int position) const {
     return tiles[index].get();
 }
 
+int GameBoard::getTileCount() const {
+    return static_cast<int>(tiles.size());
+}
 
 void GameBoard::addPlayer(std::shared_ptr<Player> player) {
     players.push_back(player);

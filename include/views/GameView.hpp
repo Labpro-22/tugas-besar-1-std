@@ -15,7 +15,6 @@ public:
     void showTurnInfo(int currentTurn, int maxTurn);
     void showDiceSetDetailed(const std::string& playerName, int d1, int d2, const std::string& destination);
     void showInvalidDice();
-    void showPlayerTurn(const std::string& username);
     void showCommandList();
 
     void showDiceRolling();
