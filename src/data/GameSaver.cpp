@@ -13,8 +13,13 @@
 #include "../../include/models/Railroad.hpp"
 #include "../../include/models/Utility.hpp"
 
-void GameSaver::writePlayerStates(ofstream& out, const vector<shared_ptr<Player>>& players) const {
-    out << players.size() << "\n";
+void GameSaver::writePlayerStates(ofstream& out, GameBoard* board) const {
+    const vector<shared_ptr<Player>>& players = board->getPlayers();
+    size_t realCount = 0;
+    for (size_t i = 0; i < players.size(); ++i) {
+        if (players[i].get() != nullptr) ++realCount;
+    }
+    out << realCount << "\n";
     for (size_t i = 0; i < players.size(); ++i) {
         Player* p = players[i].get();
         if (p == nullptr) continue;
@@ -23,36 +28,41 @@ void GameSaver::writePlayerStates(ofstream& out, const vector<shared_ptr<Player>
         switch (p->getStatus()) {
             case ACTIVE:   statusStr = "ACTIVE";   break;
             case BANKRUPT: statusStr = "BANKRUPT"; break;
-            case JAILED:   statusStr = "JAILED";   break;
+            case JAILED: {
+                int n = p->getJailTurnsRemaining();
+                statusStr = (n > 0) ? ("JAILED_" + to_string(n)) : "JAILED";
+                break;
+            }
         }
 
-        const vector<SkillCard*>& hand = p->getHand();
+        string positionCode;
+        Tile* tile = board->getTileAt(p->getPosition());
+        if (tile != nullptr) positionCode = tile->getCode();
+        if (positionCode.empty()) positionCode = to_string(p->getPosition());
+
         out << p->getUsername() << " "
             << p->getMoney() << " "
-            << p->getPosition() << " "
-            << statusStr << " "
-            << hand.size();
+            << positionCode << " "
+            << statusStr << "\n";
+
+        const vector<SkillCard*>& hand = p->getHand();
+        out << hand.size() << "\n";
 
         for (size_t h = 0; h < hand.size(); ++h) {
             SkillCard* c = hand[h];
             if (c == nullptr) {
-                out << " - - -";
+                out << "-\n";
                 continue;
             }
             string type = c->getCardType();
-            out << " " << type;
-
-            bool hasValue = (type == "MOVE" || type == "DISCOUNT" || type == "TELEPORT"
-                             || type == "MoveCard" || type == "DiscountCard" || type == "TeleportCard");
-            if (hasValue) out << " " << c->getValue();
-            else out << " -";
-
-            bool hasDuration = (type == "DISCOUNT" || type == "SHIELD"
-                                || type == "DiscountCard" || type == "ShieldCard");
-            if (hasDuration) out << " " << c->getRemainingDuration();
-            else out << " -";
+            out << type;
+            if (type == "MoveCard" || type == "MOVE") {
+                out << " " << c->getValue();
+            } else if (type == "DiscountCard" || type == "DISCOUNT") {
+                out << " " << c->getValue() << " " << c->getRemainingDuration();
+            }
+            out << "\n";
         }
-        out << "\n";
     }
 }
 
@@ -62,9 +72,12 @@ void GameSaver::writeTurnOrder(ofstream& out, GameBoard* board) const {
         return;
     }
     const vector<shared_ptr<Player>>& players = board->getPlayers();
+    bool first = true;
     for (size_t i = 0; i < players.size(); ++i) {
-        if (i > 0) out << " ";
-        if (players[i] != nullptr) out << players[i]->getUsername();
+        if (players[i] == nullptr) continue;
+        if (!first) out << " ";
+        out << players[i]->getUsername();
+        first = false;
     }
     out << "\n";
     shared_ptr<Player> cur = board->getCurrentPlayer();
@@ -114,13 +127,13 @@ void GameSaver::writePropertyStates(ofstream& out, const vector<unique_ptr<Tile>
 }
 
 void GameSaver::writeDeckState(ofstream& out, const vector<SkillCard*>& deck) const {
-    out << deck.size();
-    for (size_t i = 0; i < deck.size(); ++i) {
-        SkillCard* c = deck[i];
-        if (c == nullptr) { out << " -"; continue; }
-        out << " " << c->getCardType();
+    size_t realCount = 0;
+    for (SkillCard* c : deck) if (c != nullptr) ++realCount;
+    out << realCount << "\n";
+    for (SkillCard* c : deck) {
+        if (c == nullptr) continue;
+        out << c->getCardType() << "\n";
     }
-    out << "\n";
 }
 
 void GameSaver::writeLogState(ofstream& out, TransactionLogger* logger) const {
@@ -146,7 +159,7 @@ bool GameSaver::save(GameBoard* board, TransactionLogger* logger, const string& 
 
     out << board->getCurrentTurnNumber() << " " << board->getMaxTurn() << "\n";
 
-    writePlayerStates(out, board->getPlayers());
+    writePlayerStates(out, board);
     writeTurnOrder(out, board);
     writePropertyStates(out, board->getTiles());
 

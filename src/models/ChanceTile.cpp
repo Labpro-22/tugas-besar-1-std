@@ -16,7 +16,6 @@ CardDeck<ActionCard>* ChanceTile::getDeck() const {
 ActionCard* ChanceTile::drawCard(Player* player, CardDeck<ActionCard>* d) {
     (void)player;
     if (d == nullptr) return nullptr;
-    if (d->isEmpty()) return nullptr;
     return d->drawTop();
 }
 
