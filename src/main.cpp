@@ -1,7 +1,10 @@
-#include "../include/views/CommandProcessor.hpp"
-#include "../include/core/GameController.hpp"
-#include "../include/views/BoardView.hpp"
-#include "../include/views/PropertyView.hpp"
+#include "views/CommandProcessor.hpp"
+#include "core/GameController.hpp"
+#include "views/BoardView.hpp"
+#include "views/PropertyView.hpp"
+#include "views/GameView.hpp"
+#include "data/ConfigParser.hpp"
+
 #include <algorithm>
 #include <iostream>
 #include <limits>
@@ -10,114 +13,141 @@
 
 using namespace std;
 
-namespace {
-
-int askIntWithDefault(const string& prompt, int defaultValue) {
+// ──────────────────────────────────────────────
+//  Utility: read a trimmed line from stdin
+// ──────────────────────────────────────────────
+static string readLine(const string& prompt = "") {
+    if (!prompt.empty()) cout << prompt;
     string line;
-    cout << prompt;
     getline(cin, line);
-    if (line.empty()) return defaultValue;
+    // trim trailing whitespace
+    while (!line.empty() && (line.back() == '\r' || line.back() == ' '))
+        line.pop_back();
+    return line;
+}
 
-    try {
-        return stoi(line);
-    } catch (...) {
-        return defaultValue;
+static int readInt(const string& prompt, int defaultVal) {
+    string line = readLine(prompt);
+    if (line.empty()) return defaultVal;
+    try { return stoi(line); } catch (...) { return defaultVal; }
+}
+
+
+
+// ──────────────────────────────────────────────
+//  Setup a New Game
+// ──────────────────────────────────────────────
+static bool setupNewGame(GameController& gc) {
+    cout << gc.startGame() << "\n";
+
+    // Read start balance from config (ConfigParser already loaded it into board).
+    // We expose it via GameController::getBoard().
+    // Fallback: read from misc.txt manually or use 1500 default.
+    int startMoney = 1500;
+    {
+        // Try to read from config
+        ConfigParser cp("config");
+        int sm = cp.getStartBalance();
+        if (sm > 0) startMoney = sm;
     }
-}
 
-}
+    int playerCount = readInt("Jumlah pemain [2-4] (default 2): ", 2);
+    playerCount = max(2, min(4, playerCount));
 
-int main() {
-    cout << "========================================" << endl;
-    cout << "       MONOPOLI GAME - OOP Edition      " << endl;
-    cout << "========================================" << endl;
-    cout << endl;
-
-    GameController gameController;
-    
-    BoardView boardView;
-    PropertyView propertyView;
-    GameView gameView;
-    
-    CommandProcessor commandProcessor(&gameController, &boardView, &propertyView, &gameView);
-
-    bool initialized = false;
-    while (!initialized) {
-        cout << "Menu Utama:\n";
-        cout << "  1. New Game\n";
-        cout << "  2. Load Game\n";
-        cout << "  3. Exit\n";
-        cout << "Pilih menu [1-3]: ";
-
-        string choice;
-        getline(cin, choice);
-
-        if (choice == "1") {
-            cout << gameController.startGame() << endl;
-
-            int playerCount = askIntWithDefault("Jumlah pemain [2-4] (default 2): ", 2);
-            if (playerCount < 2) playerCount = 2;
-            if (playerCount > 4) playerCount = 4;
-
-            int startMoney = askIntWithDefault("Uang awal tiap pemain (default 2000): ", 2000);
-            if (startMoney <= 0) startMoney = 2000;
-
-            vector<string> usedNames;
-            for (int i = 0; i < playerCount; ++i) {
-                string name;
-                while (true) {
-                    cout << "Nama pemain " << (i + 1) << ": ";
-                    getline(cin, name);
-
-                    if (name.empty()) {
-                        cout << "Nama tidak boleh kosong.\n";
-                        continue;
-                    }
-                    if (find(usedNames.begin(), usedNames.end(), name) != usedNames.end()) {
-                        cout << "Nama sudah dipakai. Gunakan nama lain.\n";
-                        continue;
-                    }
-                    break;
-                }
-
-                usedNames.push_back(name);
-                cout << gameController.addPlayer(name, startMoney) << endl;
-            }
-
-            gameController.initializeGame();
-            initialized = true;
-        }
-        else if (choice == "2") {
-            cout << gameController.startGame() << endl;
-
-            cout << "Nama file save (default savegame.txt): ";
-            string saveFile;
-            getline(cin, saveFile);
-            if (saveFile.empty()) saveFile = "savegame.txt";
-
-            if (!gameController.loadGame(saveFile)) {
-                cout << "Gagal memuat game dari '" << saveFile << "'.\n\n";
+    vector<string> usedNames;
+    for (int i = 0; i < playerCount; ++i) {
+        string name;
+        while (true) {
+            name = readLine("  Nama pemain " + to_string(i + 1) + ": ");
+            if (name.empty()) {
+                cout << "  [!] Nama tidak boleh kosong.\n";
                 continue;
             }
-
-            gameController.initializeGame();
-            initialized = true;
+            if (find(usedNames.begin(), usedNames.end(), name) != usedNames.end()) {
+                cout << "  [!] Nama sudah dipakai. Gunakan nama lain.\n";
+                continue;
+            }
+            break;
         }
-        else if (choice == "3") {
-            cout << "Keluar dari game.\n";
+        usedNames.push_back(name);
+        cout << "  " << gc.addPlayer(name, startMoney) << "\n";
+    }
+
+    gc.initializeGame();
+
+    cout << "\n[OK] Game dimulai! Setiap pemain mulai dengan M" << startMoney << ".\n";
+    return true;
+}
+
+// ──────────────────────────────────────────────
+//  Load Game
+// ──────────────────────────────────────────────
+static bool setupLoadGame(GameController& gc) {
+    cout << gc.startGame() << "\n";
+
+    string saveFile = readLine("Nama file save (default: savegame.txt): ");
+    if (saveFile.empty()) saveFile = "savegame.txt";
+
+    if (!gc.loadGame(saveFile)) {
+        cout << "[!] Gagal memuat game dari '" << saveFile << "'.\n\n";
+        return false;
+    }
+
+    gc.initializeGame();
+    cout << "[OK] Game berhasil dimuat dari '" << saveFile << "'.\n";
+    return true;
+}
+
+// ──────────────────────────────────────────────
+//  Main
+// ──────────────────────────────────────────────
+int main() {
+
+    GameController gameController;
+    BoardView      boardView;
+    PropertyView   propertyView;
+    GameView       gameView;
+
+    CommandProcessor commandProcessor(&gameController, &boardView, &propertyView, &gameView);
+
+    // ── Menu utama ──
+    bool initialized = false;
+    while (!initialized) {
+        cout << "╔══════════════════════════╗\n";
+        cout << "║       MENU UTAMA         ║\n";
+        cout << "╠══════════════════════════╣\n";
+        cout << "║  1. New Game             ║\n";
+        cout << "║  2. Load Game            ║\n";
+        cout << "║  3. Keluar               ║\n";
+        cout << "╚══════════════════════════╝\n";
+
+        string choice = readLine("Pilih [1-3]: ");
+
+        if (choice == "1") {
+            initialized = setupNewGame(gameController);
+        }
+        else if (choice == "2") {
+            initialized = setupLoadGame(gameController);
+        }
+        else if (choice == "3" || choice == "exit" || choice == "EXIT") {
+            cout << "Sampai jumpa!\n";
             return 0;
         }
         else {
-            cout << "Pilihan tidak valid.\n\n";
+            cout << "[!] Pilihan tidak valid.\n\n";
         }
     }
-    
-    cout << "\n[INFO] Ketik HELP untuk melihat command yang tersedia." << endl;
-    cout << "[INFO] Mulai dengan CETAK_PAPAN untuk melihat board." << endl;
-    cout << endl;
-    
-    // Main game loop
+
+    // ── Info awal ──
+    cout << "\n";
+    cout << "================================================\n";
+    cout << "  Ketik HELP untuk melihat semua perintah.\n";
+    cout << "  Mulai dengan CETAK_PAPAN untuk melihat board.\n";
+    cout << "================================================\n\n";
+
+    // ── Main game loop ──
     while (true) {
+        if (cin.eof()) break;
         commandProcessor.readCommand();
     }
 

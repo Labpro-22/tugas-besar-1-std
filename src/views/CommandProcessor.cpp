@@ -87,6 +87,29 @@ static void advanceTurnAndCheck(GameController* gc, GameView* gv) {
     Player* next = tm->getCurrentPlayer();
     tm->resetTurnFlags(next);
 
+    if (gv && next) {
+        int turn = tm->getCurrentTurnNumber();
+        int maxT = tm->getMaxTurn();
+        cout << "\n========================================\n";
+        cout << "  GILIRAN: " << next->getUsername()
+             << " | Uang: M" << next->getMoney()
+             << " | Turn: " << turn
+             << (maxT > 0 ? "/" + to_string(maxT) : "")
+             << "\n";
+
+        // Tampilkan kartu di tangan
+        const auto& hand = next->getHand();
+        if (hand.empty()) {
+            cout << "  Kartu: (tidak ada)\n";
+        } else {
+            cout << "  Kartu kemampuan (" << hand.size() << "):\n";
+            for (int i = 0; i < (int)hand.size(); ++i) {
+                cout << "    " << (i+1) << ". " << hand[i]->getDescription() << "\n";
+            }
+        }
+        cout << "========================================\n\n";
+    }
+
     if (gv) showAutoWinIfNeeded(gc, gv);
 }
 
@@ -696,7 +719,7 @@ void CommandProcessor::executeCommand(const string& cmd) {
         gameView->showMessage(line);
     }
     else if (token == "GUNAKAN_KEMAMPUAN") {
-        // GUNAKAN_KEMAMPUAN — tampilkan kartu di tangan, minta pilihan
+        // GUNAKAN_KEMAMPUAN tampilkan kartu di tangan, minta pilihan
         if (!gameView || !gameController) return;
         auto player = gameController->getBoard().getCurrentPlayer();
         if (!player) { gameView->showError("Tidak ada pemain aktif."); return; }

@@ -13,8 +13,8 @@ void PropertyView::showPropertyDetail(Property* property) {
     cout << "Owner   : " << property->getOwner() << endl;
 }
 
+// views/PropertyView.cpp — fungsi showPlayerProperties
 void PropertyView::showPlayerProperties(Player* player, const vector<unique_ptr<Tile>>& tiles) {
-
     if (!player) return;
 
     cout << "=== Properti Milik: " << player->getUsername() << " ===\n\n";
@@ -23,9 +23,10 @@ void PropertyView::showPlayerProperties(Player* player, const vector<unique_ptr<
     int total = 0;
 
     for (const auto& t : tiles) {
-
-
-        Property* p = (Property*)t.get();
+        // ── GANTI C-cast dengan dynamic_cast ──
+        Property* p = dynamic_cast<Property*>(t.get());
+        if (!p) continue;  // skip tile bukan Property (GoTile, JailTile, dll)
+        // ── SELESAI ──
 
         if (p->getOwner() != player->getUsername()) continue;
 
@@ -39,13 +40,10 @@ void PropertyView::showPlayerProperties(Player* player, const vector<unique_ptr<
     }
 
     for (auto& [category, props] : groups) {
-
         cout << "[" << category << "]\n";
-
         for (Property* p : props) {
-
             string status;
-            if (p->getStatus() == MORTGAGED)
+            if (p->getStatus() == StatusType::MORTGAGED)
                 status = "MORTGAGED [M]";
             else
                 status = "OWNED";
@@ -53,11 +51,10 @@ void PropertyView::showPlayerProperties(Player* player, const vector<unique_ptr<
             cout << left
                  << setw(28) << ("- " + p->getName() + " (" + p->getCode() + ")")
                  << setw(8)  << ("M" + to_string(p->getPurchasePrice()))
-                 << status << endl;
+                 << status << "\n";
         }
-
-        cout << endl;
+        cout << "\n";
     }
 
-    cout << "Total kekayaan properti: M" << total << endl;
+    cout << "Total kekayaan properti: M" << total << "\n";
 }
