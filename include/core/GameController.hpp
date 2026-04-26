@@ -4,9 +4,10 @@
 #include <vector>
 #include <string>
 #include <memory>
+#include "GameContext.hpp"
+#include "../models/WinConditionChecker.hpp"
 
 class GameBoard;
-class Bank;
 class Auction;
 class BuildingManager;
 class Dice;
@@ -21,6 +22,7 @@ class WinConditionChecker;
 class Player;
 class Tile;
 class Property;
+class GameView;
 
 class GameController {
 private:
@@ -29,7 +31,6 @@ private:
     GameSaver* gameSaver;
     GameLoader* gameLoader;
     TransactionLogger* transactionLogger;
-    Bank* bank;
     Auction* auction;
     BuildingManager* buildingManager;
     Dice* dice;
@@ -37,6 +38,8 @@ private:
     MovementHandler* movementHandler;
     SkillCardManager* skillCardManager;
     WinConditionChecker* winConditionChecker;
+    GameContext gameContext;
+    int currentTurn;
 
 public:
     GameController();
@@ -56,14 +59,30 @@ public:
     std::string processLanding(Player& player, Tile* tile);
     void processPurchase(Player& player, Property* property);
     void processAuction(Property* property);
-    void processBankruptcy(Player& player);
+    void processBankruptcy(Player& player, Player* creditor = nullptr);
+
+    bool isAuctionActive() const;
+    bool isAuctionEnded() const;
+    bool placeAuctionBid(const std::string& username, int amount);
+    void passAuction(const std::string& username);
+    bool finalizeAuction();
+    int getAuctionCurrentBid() const;
+    std::string getAuctionCurrentBidderName() const;
+
+    bool mortgage(Player& player, Property* property);
+    bool redeem(Player& player, Property* property);
 
     bool checkGameEnd();
     Player* getWinner();
+    std::vector<Player*> getWinners();
 
     GameBoard& getBoard();
     const std::vector<std::shared_ptr<Player>>& getPlayers() const;
     std::shared_ptr<Player> getPlayerByUsername(const std::string& username);
+
+    MovementHandler*  getMovementHandler()  const;
+    TurnManager*      getTurnManager()      const;
+    SkillCardManager* getSkillCardManager() const;
 };
 
 #endif

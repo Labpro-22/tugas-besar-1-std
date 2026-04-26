@@ -114,14 +114,18 @@ void CommunityCard::execute(Player* player, GameContext* ctx) {
         }
 
         case ActionCardType::PAY_TO_ALL: {
-            // Shield berlaku untuk total pembayaran (satu kali blok).
+            // Shield memblok seluruh PAY_TO_ALL sebagai satu tagihan.
+            if (player->isShieldActive()) {
+                player->clearShield();
+                break;
+            }
             for (Player* other : ctx->allPlayers) {
-                if (!other)                            continue;
-                if (other == player)                   continue;
-                if (other->getStatus() != ACTIVE)     continue;
+                if (!other)                        continue;
+                if (other == player)               continue;
+                if (other->getStatus() != ACTIVE)  continue;
 
-                (*player) -= value; // operator-= cek shield per panggilan
-                (*other)  += value;
+                player->payVoluntary(value); // langsung kurangi, shield sudah dicek di atas
+                (*other) += value;
             }
             break;
         }

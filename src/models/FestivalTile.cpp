@@ -1,6 +1,8 @@
 #include "../include/models/FestivalTile.hpp"
 #include "../include/models/Player.hpp"
 #include "../include/models/Property.hpp"
+#include "../include/core/GameContext.hpp"
+#include "../include/models/GameBoard.hpp"
 
 
 FestivalTile::FestivalTile(int position, const std::string& name, const std::string& code, const std::string& color)
@@ -25,9 +27,14 @@ void FestivalTile::updateDuration() {
 }
 
 void FestivalTile::executeAction(Player* player, GameContext* ctx) {
-    (void)ctx;
-    if (player != nullptr) {
-        // Apply festival effect to all properties owned by the player
-        // This will be coordinated with the game controller
+    if (player == nullptr || ctx == nullptr || !ctx->hasBoard()) return;
+
+    const auto& tiles = ctx->board->getTiles();
+    for (const auto& tilePtr : tiles) {
+        Property* prop = dynamic_cast<Property*>(tilePtr.get());
+        if (!prop) continue;
+        if (prop->getOwner() != player->getUsername()) continue;
+        if (prop->getStatus() == MORTGAGED) continue;
+        applyFestivalEffect(player, prop);
     }
 }

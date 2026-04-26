@@ -26,7 +26,13 @@ public:
 
     bool placeBid(std::shared_ptr<Player> player, int bidAmount);
     void pass(std::shared_ptr<Player> player);
+    void endAuction();
 
     bool isAuctionEnded() const;
+    bool isActive() const;
+    int getCurrentBid() const;
+    int getParticipantCount() const;
+    std::shared_ptr<Property> getProperty() const;
+    std::shared_ptr<Player> getCurrentBidder() const;
     std::shared_ptr<Player> getWinner() const;
 };

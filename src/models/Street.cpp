@@ -89,6 +89,15 @@ int Street::calculateRent(Player* visitor) {
     return baseRent * festivalMultiplier;
 }
 
+void Street::sellBuilding() {
+    if (buildingCount == "H") {
+        buildingCount = "4"; // jual hotel → kembali ke 4 rumah
+    } else {
+        int count = std::stoi(buildingCount);
+        if (count > 0) buildingCount = std::to_string(count - 1);
+    }
+}
+
 void Street::mortgage() {
     Property::mortgage();
 }

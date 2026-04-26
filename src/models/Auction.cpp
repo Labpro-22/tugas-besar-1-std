@@ -36,8 +36,40 @@ void Auction::pass(std::shared_ptr<Player> player) {
     consecutivePassCount++;
 }
 
+void Auction::endAuction() {
+    active = false;
+}
+
 bool Auction::isAuctionEnded() const {
-    return active && consecutivePassCount >= (int)participants.size() - 1;
+    if (!active) return false;
+    if (participants.empty()) return true;
+
+    // Jika belum ada bid, lelang berakhir saat semua partisipan pass.
+    // Jika sudah ada bid, cukup pass beruntun dari semua partisipan lain.
+    int threshold = currentBidder.expired()
+        ? static_cast<int>(participants.size())
+        : static_cast<int>(participants.size()) - 1;
+    return consecutivePassCount >= threshold;
+}
+
+bool Auction::isActive() const {
+    return active;
+}
+
+int Auction::getCurrentBid() const {
+    return currentBid;
+}
+
+int Auction::getParticipantCount() const {
+    return static_cast<int>(participants.size());
+}
+
+std::shared_ptr<Property> Auction::getProperty() const {
+    return property.lock();
+}
+
+std::shared_ptr<Player> Auction::getCurrentBidder() const {
+    return currentBidder.lock();
 }
 
 std::shared_ptr<Player> Auction::getWinner() const {

@@ -1,0 +1,53 @@
+1 15
+8
+1 2000 0 ACTIVE 0
+2 2000 0 ACTIVE 0
+3 2000 0 ACTIVE 0
+4 2000 0 ACTIVE 0
+1 2000 0 ACTIVE 0
+2 2000 0 ACTIVE 0
+3 2000 0 ACTIVE 0
+4 2000 0 ACTIVE 0
+1 2 3 4 1 2 3 4
+1
+28
+GRT street BANK BANK 1 0 0
+TSK street BANK BANK 1 0 0
+GBR railroad BANK BANK 1 0 0
+BGR street BANK BANK 1 0 0
+DPK street BANK BANK 1 0 0
+BKS street BANK BANK 1 0 0
+MGL street BANK BANK 1 0 0
+PLN utility BANK BANK 1 0 0
+SOL street BANK BANK 1 0 0
+YOG street BANK BANK 1 0 0
+STB railroad BANK BANK 1 0 0
+MAL street BANK BANK 1 0 0
+SMG street BANK BANK 1 0 0
+SBY street BANK BANK 1 0 0
+MKS street BANK BANK 1 0 0
+BLP street BANK BANK 1 0 0
+MND street BANK BANK 1 0 0
+TUG railroad BANK BANK 1 0 0
+PLB street BANK BANK 1 0 0
+PKB street BANK BANK 1 0 0
+PAM utility BANK BANK 1 0 0
+MED street BANK BANK 1 0 0
+BDG street BANK BANK 1 0 0
+DEN street BANK BANK 1 0 0
+MTR street BANK BANK 1 0 0
+GUB railroad BANK BANK 1 0 0
+JKT street BANK BANK 1 0 0
+IKN street BANK BANK 1 0 0
+15 DemolitionCard MoveCard TeleportCard DiscountCard MoveCard LassoCard ShieldCard LassoCard ShieldCard DiscountCard DiscountCard MoveCard TeleportCard DemolitionCard MoveCard
+10
+[Turn 1] 1 | JOIN | saldo awal 2000
+[Turn 1] 2 | JOIN | saldo awal 2000
+[Turn 1] 3 | JOIN | saldo awal 2000
+[Turn 1] 4 | JOIN | saldo awal 2000
+[Turn 1] SYSTEM | INIT | Game diinisialisasi dengan 4 pemain
+[Turn 1] 1 | JOIN | saldo awal 2000
+[Turn 1] 2 | JOIN | saldo awal 2000
+[Turn 1] 3 | JOIN | saldo awal 2000
+[Turn 1] 4 | JOIN | saldo awal 2000
+[Turn 1] SYSTEM | INIT | Game diinisialisasi dengan 4 pemain

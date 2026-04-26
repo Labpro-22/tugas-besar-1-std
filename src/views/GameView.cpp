@@ -24,13 +24,19 @@ void GameView::showCommandList() {
     cout << "  CETAK_PROPERTI    - Menampilkan detail properti\n";
     cout << "  LEMPAR_DADU       - Melempar dadu secara random\n";
     cout << "  ATUR_DADU [X Y]   - Atur hasil dadu secara manual\n";
+    cout << "  BELI              - Beli properti yang baru diinjak\n";
+    cout << "  LELANG            - Mulai lelang properti yang baru diinjak\n";
+    cout << "  BID <jumlah>      - Menawar saat lelang aktif\n";
+    cout << "  PASS              - Lewat saat lelang aktif\n";
+    cout << "  SELESAI_LELANG    - Menutup lelang aktif\n";
     cout << "  GADAI             - Menggadaikan properti\n";
     cout << "  TEBUS             - Menebus properti yang digadai\n";
     cout << "  BANGUN            - Membangun rumah/hotel di properti\n";
     cout << "  GUNAKAN_KEMAMPUAN - Menggunakan kartu kemampuan spesial\n";
     cout << "  SIMPAN [file]     - Simpan state game (default savegame.txt)\n";
     cout << "  MUAT   [file]     - Muat state game (default savegame.txt)\n";
-    cout << "  CETAK_LOG         - Tampilkan seluruh log transaksi\n";
+    cout << "  CETAK_LOG [N]     - Tampilkan seluruh / N log terbaru\n";
+    cout << "  MENANG            - Tampilkan pemenang saat game selesai\n";
     cout << "  EXIT              - Keluar dari game\n";
     cout << "  HELP              - Tampilkan help ini\n";
 }

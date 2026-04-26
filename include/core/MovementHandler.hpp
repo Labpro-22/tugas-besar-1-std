@@ -31,6 +31,8 @@ public:
 
     // Caller harus roll dadu sebelum memanggil ini, lalu cek return value
     JailResult handleJailTurn(Player* player, Dice& dice);
+
+    GameContext* getContext() const { return ctx; }
 };
 
 #endif

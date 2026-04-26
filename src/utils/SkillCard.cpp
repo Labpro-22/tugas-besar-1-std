@@ -102,7 +102,13 @@ void TeleportCard::activate(Player* player, GameContext* ctx) {
     }
 
     int target = -1;
-    cin >> target;
+    if (!(cin >> target)) {
+        cin.clear();
+        cin.ignore(10000, '\n');
+        if (ctx->gameView) ctx->gameView->showError("Input tidak valid. TeleportCard dibatalkan.");
+        else               cout << "Input tidak valid. TeleportCard dibatalkan.\n";
+        return;
+    }
     cin.ignore();
 
     if (target < 0 || target >= boardSize) {
@@ -166,7 +172,13 @@ void LassoCard::activate(Player* player, GameContext* ctx) {
     }
 
     int choice = 0;
-    cin >> choice;
+    if (!(cin >> choice)) {
+        cin.clear();
+        cin.ignore(10000, '\n');
+        if (ctx->gameView) ctx->gameView->showMessage("Input tidak valid. LassoCard dibatalkan.");
+        else               cout << "Input tidak valid. LassoCard dibatalkan.\n";
+        return;
+    }
     cin.ignore();
 
     if (choice <= 0 || choice > static_cast<int>(candidates.size())) {
@@ -242,7 +254,13 @@ void DemolitionCard::activate(Player* player, GameContext* ctx) {
     }
 
     int choice = 0;
-    cin >> choice;
+    if (!(cin >> choice)) {
+        cin.clear();
+        cin.ignore(10000, '\n');
+        if (ctx->gameView) ctx->gameView->showMessage("Input tidak valid. DemolitionCard dibatalkan.");
+        else               cout << "Input tidak valid. DemolitionCard dibatalkan.\n";
+        return;
+    }
     cin.ignore();
 
     if (choice <= 0 || choice > static_cast<int>(targets.size())) {

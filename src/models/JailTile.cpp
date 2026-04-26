@@ -24,12 +24,9 @@ void JailTile::sendToJail(Player* player) {
 }
 
 void JailTile::visitJail(Player* player) {
-    if (player == nullptr) {
-        return;
-    }
-
-    // Player lands on jail but is just visiting
-    player->incrementJailTurns();
+    (void)player;
+    // Player hanya berkunjung (Just Visiting), tidak ada efek apapun.
+    // incrementJailTurns hanya dilakukan oleh MovementHandler::handleJailTurn saat STILL_JAILED.
 }
 
 JailResult JailTile::attemptEscape(Player* player) {
@@ -37,14 +34,12 @@ JailResult JailTile::attemptEscape(Player* player) {
         return JailResult::STILL_JAILED;
     }
 
-    if (player->getMoney() >= fineAmount) {
-        payFine(player);
-    } else {
-        player->operator-=(fineAmount);
-        player->setStatus(PlayerStatus::ACTIVE);
-        player->resetJailTurns();
+    if (player->getMoney() < fineAmount) {
+        // Tidak mampu bayar: caller harus handle kebangkrutan
+        return JailResult::STILL_JAILED;
     }
 
+    payFine(player);
     return JailResult::FORCED_OUT;
 }
 

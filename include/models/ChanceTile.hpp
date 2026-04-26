@@ -2,11 +2,9 @@
 
 #include "ActionTile.hpp"
 #include "../utils/CardDeck.hpp"
-#include "../include/utils/ActionCard.hpp"
-#include "../include/utils/CardDeck.hpp"
-#include "../include/models/Player.hpp"
+#include "../utils/ActionCard.hpp"
 
-// Forward declaration
+class Player;
 
 class ChanceTile : public ActionTile {
 private:

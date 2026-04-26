@@ -34,10 +34,33 @@ MovementHandler::MovementHandler(GameBoard* b, GameContext* c)
     : board(b), ctx(c),
       boardSize(0),
       goSalary(0),
-      jailFine(0) {}
+      jailFine(0) {
+    if (board && !board->getTiles().empty()) {
+        boardSize = static_cast<int>(board->getTiles().size());
+    }
+    
+}
 
 
-//   Jika consecutiveDoubles mencapai 3, player langsung ke penjara (gak dapet gaji)
+// Ambil boardSize aktual dari board 
+static int getBoardSz(GameBoard* board, GameContext* ctx) {
+    if (board && !board->getTiles().empty())
+        return static_cast<int>(board->getTiles().size());
+    if (ctx) return ctx->getBoardSize();
+    return 40;
+}
+
+// Ambil jailFine dari JailTile di board
+static int getJailFineSz(GameBoard* board) {
+    if (!board) return 0;
+    for (const auto& t : board->getTiles()) {
+        JailTile* jt = dynamic_cast<JailTile*>(t.get());
+        if (jt) return jt->getFineAmount();
+    }
+    return 0;
+}
+
+//   saat consecutiveDoubles mencapai 3, player langsung ke penjara (gak dapet gaji)
 //   Caller  harus udah increment consecutiveDoubles sebelum memanggil movePlayer jika dadu double.
 void MovementHandler::movePlayer(Player* player, int steps) {
     if (!player) return;
@@ -55,13 +78,14 @@ void MovementHandler::movePlayer(Player* player, int steps) {
         return;
     }
 
+    int sz = getBoardSz(board, ctx);
     int oldPos = player->getPosition();
     int rawNewPos = oldPos + steps;
-    int newPos = rawNewPos % boardSize;
-    if (newPos < 0) newPos += boardSize;
+    int newPos = rawNewPos % sz;
+    if (newPos < 0) newPos += sz;
 
     // Lewati GO -> dapet gaji
-    if (rawNewPos >= boardSize) {
+    if (rawNewPos >= sz) {
         handlePassGo(player);
     }
 
@@ -83,12 +107,12 @@ void MovementHandler::teleportPlayer(Player* player, int target) {
     if (player->getStatus() == BANKRUPT) return;
     if (player->getStatus() == JAILED) return; // guard ekstra
 
+    int sz = getBoardSz(board, ctx);
     int oldPos = player->getPosition();
-    int normalizedTarget = target % boardSize;
-    if (normalizedTarget < 0) normalizedTarget += boardSize;
+    int normalizedTarget = ((target % sz) + sz) % sz;
 
-    // Wrap-around ke GO
-    if (normalizedTarget < oldPos) {
+    // Beri gaji hanya jika benar-benar wrap-around melewati GO (target raw > oldPos via modulo)
+    if (target >= sz || (target >= 0 && normalizedTarget < oldPos)) {
         handlePassGo(player);
     }
 
@@ -106,8 +130,8 @@ void MovementHandler::pullPlayer(Player* target, int toPosition) {
     if (!target) return;
     if (target->getStatus() == BANKRUPT) return;
 
-    int normalizedTarget = toPosition % boardSize;
-    if (normalizedTarget < 0) normalizedTarget += boardSize;
+    int sz = getBoardSz(board, ctx);
+    int normalizedTarget = ((toPosition % sz) + sz) % sz;
 
     target->setPosition(normalizedTarget);
 
@@ -170,13 +194,14 @@ JailResult MovementHandler::handleJailTurn(Player* player, Dice& dice) {
 
     // Giliran ke 4 bayar denda
     if (turnsUsed >= 3) {
+        int fine = getJailFineSz(board);
         // Jika tidak mampu bayar, caller harus handle kebangkrutan.
-        (*player) -= jailFine;
+        (*player) -= fine;
         player->setStatus(ACTIVE);
         player->resetJailTurns();
         if (ctx && ctx->hasLogger()) {
             ctx->logger->log(0, player->getUsername(), "PENJARA",
-                             "Giliran ke-4: wajib bayar denda M" + to_string(jailFine) + " keluar penjara");
+                             "Giliran ke-4: wajib bayar denda M" + to_string(fine) + " keluar penjara");
         }
         return FORCED_OUT;
     }
