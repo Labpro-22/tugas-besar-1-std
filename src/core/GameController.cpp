@@ -1,4 +1,6 @@
 #include "../../include/core/GameController.hpp"
+#include "../../include/core/SkillCardManager.hpp"
+#include "../../include/core/WinConditionChecker.hpp"
 #include "../../include/models/GameBoard.hpp"
 #include "../../include/models/Player.hpp"
 #include "../../include/models/Street.hpp"
@@ -15,11 +17,16 @@ using namespace std;
 GameController::GameController()
     : gameBoard(nullptr), configParser(nullptr),
       gameSaver(nullptr), gameLoader(nullptr),
+      skillCardManager(nullptr),
+      winConditionChecker(nullptr),
       transactionLogger(nullptr) {
     gameBoard = new GameBoard();
     gameSaver = new GameSaver();
     gameLoader = new GameLoader();
     transactionLogger = new TransactionLogger();
+    skillCardManager = new SkillCardManager(*gameBoard);
+    skillCardManager->initDeck();
+    winConditionChecker = new WinConditionChecker();
 }
 
 GameController::~GameController() {
@@ -27,6 +34,8 @@ GameController::~GameController() {
     delete configParser;
     delete gameSaver;
     delete gameLoader;
+    delete skillCardManager;
+    delete winConditionChecker;
     delete transactionLogger;
 }
 
@@ -44,6 +53,7 @@ bool GameController::loadFromConfig(const std::string& basePath) {
     try {
         delete configParser;
         configParser = new ConfigParser(basePath);
+        configParser->setWinConditionChecker(winConditionChecker);
         configParser->loadConfig(gameBoard);
         if (configParser->getMaxTurn() > 0) {
             gameBoard->setMaxTurn(configParser->getMaxTurn());
@@ -149,16 +159,15 @@ void GameController::processBankruptcy(Player& player) {
 }
 
 bool GameController::checkGameEnd() {
-    cout << "[GameController] checkGameEnd\n";
-
-    // nanti:
-    // return winConditionChecker->isGameOver(...)
-    return false;
+    if (winConditionChecker == nullptr) return false;
+    return winConditionChecker->isGameOver(gameBoard);
 }
 
 Player* GameController::getWinner() {
-    cout << "[GameController] getWinner\n";
-    return nullptr; // TODO: implement win condition
+    if (winConditionChecker == nullptr) return nullptr;
+    auto winners = winConditionChecker->determineWinners(gameBoard);
+    if (winners.empty()) return nullptr;
+    return winners.front().get();
 }
 
 // ==========================

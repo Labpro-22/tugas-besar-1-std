@@ -11,6 +11,7 @@ class GameBoard;
 class Tile;
 template <typename T> class CardDeck;
 class ActionCard;
+class WinConditionChecker;
 
 class ConfigParser : public FileParser {
 private:
@@ -28,6 +29,7 @@ private:
 
     CardDeck<ActionCard>* chanceDeck;
     CardDeck<ActionCard>* communityDeck;
+    WinConditionChecker*  winChecker;
 
     map<int, Tile*> stagedTiles;
 
@@ -42,6 +44,8 @@ private:
 public:
     explicit ConfigParser(const string& basePath);
     ~ConfigParser();
+
+    void setWinConditionChecker(WinConditionChecker* w);
 
     void loadConfig(GameBoard* board);
 

@@ -26,6 +26,11 @@ void GameBoard::addPlayer(std::shared_ptr<Player> player) {
     players.push_back(player);
 }
 
+void GameBoard::clearPlayers() {
+    players.clear();
+    currentPlayerIndex = 0;
+}
+
 std::shared_ptr<Player> GameBoard::getPlayerByUsername(const std::string& username) const {
     for (const auto& p : players) {
         if (p->getUsername() == username) {
@@ -59,8 +64,8 @@ void GameBoard::setCurrentTurnNumber(int t) { currentTurnNumber = t; }
 int GameBoard::getMaxTurn() const { return maxTurn; }
 void GameBoard::setMaxTurn(int m) { maxTurn = m; }
 
-CardDeck<SkillCard>* GameBoard::getSkillDeck() const { return skillDeck; }
-void GameBoard::setSkillDeck(CardDeck<SkillCard>* d) { skillDeck = d; }
+CardDeck<SkillCard>* GameBoard::getSkillDeck() { return &skillDeck; }
+const CardDeck<SkillCard>* GameBoard::getSkillDeck() const { return &skillDeck; }
 
 void GameBoard::setCurrentPlayerByUsername(const std::string& username) {
     for (size_t i = 0; i < players.size(); ++i) {

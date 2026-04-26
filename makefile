@@ -44,6 +44,21 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 run: all
 	./$(TARGET)
 
+# ----------------------------------------------------------------------
+# Tests (save/load/config/logger regression suite)
+# ----------------------------------------------------------------------
+TEST_SRC      := tests/run_save_load_tests.cpp
+TEST_TARGET   := $(BIN_DIR)/run_save_load_tests
+# Same set of objects as the game, minus main.o, plus the test driver.
+LIB_OBJS      := $(filter-out $(OBJ_DIR)/main.o, $(OBJS))
+
+$(TEST_TARGET): $(LIB_OBJS) $(TEST_SRC) | directories
+	$(CXX) $(CXXFLAGS) $(LIB_OBJS) $(TEST_SRC) -o $@
+	@echo "Test build successful! Executable is at $(TEST_TARGET)"
+
+tests: $(TEST_TARGET)
+	./$(TEST_TARGET)
+
 # Clean up generated files
 clean:
 	rm -rf $(OBJ_DIR) $(BIN_DIR)
@@ -52,4 +67,4 @@ clean:
 # Rebuild everything from scratch
 rebuild: clean all
 
-.PHONY: all clean rebuild run directories
+.PHONY: all clean rebuild run directories tests

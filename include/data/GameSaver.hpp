@@ -17,8 +17,7 @@ using namespace std;
 
 class GameSaver {
 private:
-    void writePlayerStates(ofstream& out,
-                           const vector<shared_ptr<Player>>& players) const;
+    void writePlayerStates(ofstream& out, GameBoard* board) const;
     void writeTurnOrder(ofstream& out, GameBoard* board) const;
     void writePropertyStates(ofstream& out,
                              const vector<unique_ptr<Tile>>& tiles) const;

@@ -15,16 +15,17 @@ using namespace std;
 // Forward declarations
 class Player;
 class GameContext;
+class GameBoard;
 
 class SkillCardManager {
 private:
-    CardDeck<SkillCard> skillDeck;
+    CardDeck<SkillCard>* skillDeck;
     int maxHandSize;
 
     bool isValidIndex(Player* player, int idx) const;
 
 public:
-    explicit SkillCardManager(int maxSize = 3);
+    explicit SkillCardManager(GameBoard& board, int maxSize = 3);
 
     void initDeck();
 
@@ -42,12 +43,11 @@ public:
 
     int getMaxHandSize() const { return maxHandSize; }
 
-    // Untuk save/load
-    CardDeck<SkillCard>& getDeck() { 
-        return skillDeck; 
+    CardDeck<SkillCard>& getDeck() {
+        return *skillDeck;
     }
 
-    const CardDeck<SkillCard>& getDeck() const { return skillDeck; }
+    const CardDeck<SkillCard>& getDeck() const { return *skillDeck; }
 };
 
 #endif
