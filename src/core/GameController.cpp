@@ -1,4 +1,5 @@
 #include "../../include/core/GameController.hpp"
+#include "../../include/core/SkillCardManager.hpp"
 #include "../../include/models/GameBoard.hpp"
 #include "../../include/models/Player.hpp"
 #include "../../include/models/Property.hpp"
@@ -6,6 +7,7 @@
 #include "../../include/models/Tile.hpp"
 #include "../../include/models/Auction.hpp"
 #include "../../include/models/BuildingManager.hpp"
+#include "../../include/models/WinConditionChecker.hpp"
 #include "../../include/data/ConfigParser.hpp"
 #include "../../include/data/GameSaver.hpp"
 #include "../../include/data/GameLoader.hpp"
@@ -14,10 +16,8 @@
 #include "../../include/utils/FileWriteException.hpp"
 #include "../../include/core/MovementHandler.hpp"
 #include "../../include/core/TurnManager.hpp"
-#include "../../include/core/SkillCardManager.hpp"
 #include "../../include/core/GameContext.hpp"
 #include "../../include/utils/Dice.hpp"
-#include "../../include/models/WinConditionChecker.hpp"
 
 #include <iostream>
 #include <algorithm>

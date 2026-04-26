@@ -44,6 +44,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 run: all
 	./$(TARGET)
 
+
 # Clean up generated files
 clean:
 	rm -rf $(OBJ_DIR) $(BIN_DIR)

@@ -75,6 +75,19 @@ SkillCard* buildSkillCard(const string& type, const string& valTok, const string
 
 }
 
+namespace {
+int findPositionByCode(GameBoard* board, const string& code) {
+    if (board == nullptr) return -1;
+    const vector<std::unique_ptr<Tile>>& tiles = board->getTiles();
+    for (size_t k = 0; k < tiles.size(); ++k) {
+        if (tiles[k] && tiles[k]->getCode() == code) {
+            return static_cast<int>(k);
+        }
+    }
+    return -1;
+}
+}
+
 void GameLoader::readPlayerStates(ifstream& in, GameBoard* board) {
     string line;
     if (!readNonBlankLine(in, line)) {
@@ -87,37 +100,61 @@ void GameLoader::readPlayerStates(ifstream& in, GameBoard* board) {
     int n = parseInt(hdr[0], "JUMLAH_PEMAIN");
     for (int i = 0; i < n; ++i) {
         if (!readNonBlankLine(in, line)) {
-            throw FileFormatException("Save file: missing player line");
+            throw FileFormatException("Save file: missing player header line");
         }
         vector<string> t = tokenizeLine(trim(line));
-        if (t.size() < 5) {
-            throw FileFormatException("Player line too short: " + line);
+        if (t.size() < 4) {
+            throw FileFormatException("Player header line too short: " + line);
         }
         string username = t[0];
         int money = parseInt(t[1], "player UANG");
-        int position = parseInt(t[2], "player POSISI");
+        string positionCode = t[2];
         string statusStr = t[3];
-        int handCount = parseInt(t[4], "player JUMLAH_KARTU");
 
         PlayerStatus status;
+        int jailTurns = 0;
         if (statusStr == "ACTIVE")        status = ACTIVE;
         else if (statusStr == "BANKRUPT") status = BANKRUPT;
         else if (statusStr == "JAILED")   status = JAILED;
+        else if (statusStr.size() > 7 && statusStr.compare(0, 7, "JAILED_") == 0) {
+            status = JAILED;
+            jailTurns = parseInt(statusStr.substr(7), "player JAILED_N");
+        }
         else throw FileFormatException("Unknown player status: " + statusStr);
+
+        int position = findPositionByCode(board, positionCode);
+        if (position < 0) {
+            bool numeric = !positionCode.empty();
+            for (size_t z = 0; z < positionCode.size() && numeric; ++z) {
+                char c = positionCode[z];
+                if (z == 0 && (c == '-' || c == '+')) continue;
+                if (c < '0' || c > '9') numeric = false;
+            }
+            if (numeric) position = parseInt(positionCode, "player POSISI fallback");
+            else throw FileFormatException("Unknown player POSISI_PETAK code: " + positionCode);
+        }
 
         std::shared_ptr<Player> p = std::make_shared<Player>(username, money);
         p->setPosition(position);
         p->setStatus(status);
+        for (int k = 0; k < jailTurns; ++k) p->incrementJailTurns();
 
-        size_t idx = 5;
+        if (!readNonBlankLine(in, line)) {
+            throw FileFormatException("Save file: missing JUMLAH_KARTU_TANGAN for " + username);
+        }
+        int handCount = parseInt(trim(line), "JUMLAH_KARTU_TANGAN");
+
         for (int h = 0; h < handCount; ++h) {
-            if (idx + 2 >= t.size()) {
-                throw FileFormatException("Player hand truncated for " + username);
+            if (!readNonBlankLine(in, line)) {
+                throw FileFormatException("Save file: hand truncated for " + username);
             }
-            string type = t[idx];
-            string valTok = t[idx + 1];
-            string durTok = t[idx + 2];
-            idx += 3;
+            vector<string> ct = tokenizeLine(trim(line));
+            if (ct.empty()) {
+                throw FileFormatException("Save file: empty hand-card line for " + username);
+            }
+            string type = ct[0];
+            string valTok = (ct.size() > 1) ? ct[1] : "-";
+            string durTok = (ct.size() > 2) ? ct[2] : "-";
             SkillCard* c = buildSkillCard(type, valTok, durTok);
             p->receiveCard(c);
         }
@@ -205,18 +242,25 @@ vector<SkillCard*> GameLoader::readDeckState(ifstream& in) {
     vector<SkillCard*> out;
     string line;
     if (!readNonBlankLine(in, line)) {
-        throw FileFormatException("Save file: missing deck line");
+        throw FileFormatException("Save file: missing deck count line");
     }
-    vector<string> t = tokenizeLine(trim(line));
-    if (t.empty()) {
-        throw FileFormatException("Save file: empty deck line");
+    vector<string> hdr = tokenizeLine(trim(line));
+    if (hdr.empty()) {
+        throw FileFormatException("Save file: empty deck count line");
     }
-    int n = parseInt(t[0], "JUMLAH_KARTU_DECK");
+    int n = parseInt(hdr[0], "JUMLAH_KARTU_DECK_KEMAMPUAN");
     for (int i = 0; i < n; ++i) {
-        if (static_cast<int>(t.size()) < 1 + i + 1) {
+        if (!readNonBlankLine(in, line)) {
             throw FileFormatException("Save file: deck truncated");
         }
-        SkillCard* c = buildSkillCard(t[1 + i], "-", "-");
+        vector<string> t = tokenizeLine(trim(line));
+        if (t.empty()) {
+            throw FileFormatException("Save file: empty deck card line");
+        }
+        string type = t[0];
+        string valTok = (t.size() > 1) ? t[1] : "-";
+        string durTok = (t.size() > 2) ? t[2] : "-";
+        SkillCard* c = buildSkillCard(type, valTok, durTok);
         out.push_back(c);
     }
     return out;
@@ -239,35 +283,28 @@ void GameLoader::readLogState(ifstream& in, TransactionLogger* logger) {
         }
         if (logger == nullptr) continue;
 
-        string::size_type lb = line.find('[');
-        string::size_type rb = line.find(']');
-        if (lb == string::npos || rb == string::npos || rb <= lb) {
-            throw FileFormatException("Log entry missing [Turn N] prefix: " + line);
-        }
-        string inside = line.substr(lb + 1, rb - lb - 1);
-        string::size_type sp = inside.find(' ');
-        if (sp == string::npos) {
-            throw FileFormatException("Log entry malformed turn: " + line);
-        }
-        int turn = parseInt(inside.substr(sp + 1), "log TURN");
-
-        string rest = line.substr(rb + 1);
-        size_t k = 0;
-        while (k < rest.size() && rest[k] == ' ') ++k;
-        rest = rest.substr(k);
-
-        string::size_type p1 = rest.find(" | ");
+        string entry = trim(line);
+        string::size_type p1 = entry.find(' ');
         if (p1 == string::npos) {
-            throw FileFormatException("Log entry missing separator: " + line);
+            throw FileFormatException("Log entry malformed: " + line);
         }
-        string user = rest.substr(0, p1);
-        string after1 = rest.substr(p1 + 3);
-        string::size_type p2 = after1.find(" | ");
+        string::size_type p2 = entry.find(' ', p1 + 1);
         if (p2 == string::npos) {
-            throw FileFormatException("Log entry missing second separator: " + line);
+            throw FileFormatException("Log entry malformed (missing username/action): " + line);
         }
-        string action = after1.substr(0, p2);
-        string detail = after1.substr(p2 + 3);
+        string::size_type p3 = entry.find(' ', p2 + 1);
+
+        int turn = parseInt(entry.substr(0, p1), "log TURN");
+        string user = entry.substr(p1 + 1, p2 - p1 - 1);
+        string action;
+        string detail;
+        if (p3 == string::npos) {
+            action = entry.substr(p2 + 1);
+            detail = "";
+        } else {
+            action = entry.substr(p2 + 1, p3 - p2 - 1);
+            detail = entry.substr(p3 + 1);
+        }
 
         logger->log(turn, user, action, detail);
     }
@@ -296,6 +333,9 @@ bool GameLoader::loadSave(const string& filename,
     int maxTurn = parseInt(hdr[1], "MAX_TURN");
     board->setCurrentTurnNumber(currentTurn);
     board->setMaxTurn(maxTurn);
+
+    board->clearPlayers();
+    if (logger != nullptr) logger->clear();
 
     readPlayerStates(in, board);
     readTurnOrder(in, board);

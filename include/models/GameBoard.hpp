@@ -13,8 +13,6 @@ template <typename T> class CardDeck;
 
 class GameBoard {
 private:
-    // std::vector<Tile*> tiles;
-    // std::vector<Player*> players;
     std::vector<std::unique_ptr<Tile>> tiles;
     std::vector<std::shared_ptr<Player>> players;
     int currentPlayerIndex;
@@ -31,6 +29,7 @@ public:
     int getTileCount() const;
 
     void addPlayer(std::shared_ptr<Player> player);
+    void clearPlayers();
     std::shared_ptr<Player> getPlayerByUsername(const std::string& username) const;
     std::shared_ptr<Player> getCurrentPlayer() const;
 

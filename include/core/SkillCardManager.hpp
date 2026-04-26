@@ -42,9 +42,8 @@ public:
 
     int getMaxHandSize() const { return maxHandSize; }
 
-    // Untuk save/load
-    CardDeck<SkillCard>& getDeck() { 
-        return skillDeck; 
+    CardDeck<SkillCard>& getDeck() {
+        return skillDeck;
     }
 
     const CardDeck<SkillCard>& getDeck() const { return skillDeck; }
