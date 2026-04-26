@@ -131,9 +131,10 @@ int TurnManager::getActivePlayerCount() const {
     return count;
 }
 
-// sinkronkan currentPlayerIndex di GameBoard 
+// sinkronkan currentPlayerIndex dan currentTurnNumber di GameBoard
 void TurnManager::syncWithBoard(GameBoard* board) const {
     if (!board) return;
+    board->setCurrentTurnNumber(currentTurnNumber);
     Player* current = players.empty() ? nullptr : players[currentIndex];
     if (current) {
         board->setCurrentPlayerByUsername(current->getUsername());

@@ -13,7 +13,6 @@ void PropertyView::showPropertyDetail(Property* property) {
     cout << "Owner   : " << property->getOwner() << endl;
 }
 
-// views/PropertyView.cpp — fungsi showPlayerProperties
 void PropertyView::showPlayerProperties(Player* player, const vector<unique_ptr<Tile>>& tiles) {
     if (!player) return;
 
@@ -23,11 +22,8 @@ void PropertyView::showPlayerProperties(Player* player, const vector<unique_ptr<
     int total = 0;
 
     for (const auto& t : tiles) {
-        // ── GANTI C-cast dengan dynamic_cast ──
         Property* p = dynamic_cast<Property*>(t.get());
-        if (!p) continue;  // skip tile bukan Property (GoTile, JailTile, dll)
-        // ── SELESAI ──
-
+        if (!p) continue;
         if (p->getOwner() != player->getUsername()) continue;
 
         groups[p->getColor()].push_back(p);

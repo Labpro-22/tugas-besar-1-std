@@ -13,14 +13,10 @@
 
 using namespace std;
 
-// ──────────────────────────────────────────────
-//  Utility: read a trimmed line from stdin
-// ──────────────────────────────────────────────
 static string readLine(const string& prompt = "") {
     if (!prompt.empty()) cout << prompt;
     string line;
     getline(cin, line);
-    // trim trailing whitespace
     while (!line.empty() && (line.back() == '\r' || line.back() == ' '))
         line.pop_back();
     return line;
@@ -32,20 +28,11 @@ static int readInt(const string& prompt, int defaultVal) {
     try { return stoi(line); } catch (...) { return defaultVal; }
 }
 
-
-
-// ──────────────────────────────────────────────
-//  Setup a New Game
-// ──────────────────────────────────────────────
 static bool setupNewGame(GameController& gc) {
     cout << gc.startGame() << "\n";
 
-    // Read start balance from config (ConfigParser already loaded it into board).
-    // We expose it via GameController::getBoard().
-    // Fallback: read from misc.txt manually or use 1500 default.
     int startMoney = 1500;
     {
-        // Try to read from config
         ConfigParser cp("config");
         int sm = cp.getStartBalance();
         if (sm > 0) startMoney = sm;
@@ -79,9 +66,6 @@ static bool setupNewGame(GameController& gc) {
     return true;
 }
 
-// ──────────────────────────────────────────────
-//  Load Game
-// ──────────────────────────────────────────────
 static bool setupLoadGame(GameController& gc) {
     cout << gc.startGame() << "\n";
 
@@ -98,9 +82,6 @@ static bool setupLoadGame(GameController& gc) {
     return true;
 }
 
-// ──────────────────────────────────────────────
-//  Main
-// ──────────────────────────────────────────────
 int main() {
 
     GameController gameController;
@@ -110,7 +91,6 @@ int main() {
 
     CommandProcessor commandProcessor(&gameController, &boardView, &propertyView, &gameView);
 
-    // ── Menu utama ──
     bool initialized = false;
     while (!initialized) {
         cout << "╔══════════════════════════╗\n";
@@ -138,14 +118,12 @@ int main() {
         }
     }
 
-    // ── Info awal ──
     cout << "\n";
     cout << "================================================\n";
     cout << "  Ketik HELP untuk melihat semua perintah.\n";
     cout << "  Mulai dengan CETAK_PAPAN untuk melihat board.\n";
     cout << "================================================\n\n";
 
-    // ── Main game loop ──
     while (true) {
         if (cin.eof()) break;
         commandProcessor.readCommand();

@@ -14,9 +14,6 @@
 
 using namespace std;
 
-// ──────────────────────────────────────────────
-//  ANSI color helpers
-// ──────────────────────────────────────────────
 static const string RESET  = "\033[0m";
 
 string BoardView::getColorCode(const string& color) {
@@ -32,9 +29,6 @@ string BoardView::getColorCode(const string& color) {
     return "\033[37m";
 }
 
-// ──────────────────────────────────────────────
-//  Short color tag e.g. [BT], [MR], [DF]
-// ──────────────────────────────────────────────
 static string shortColorTag(const string& color) {
     if (color == "MERAH")      return "[MR]";
     if (color == "KUNING")     return "[KN]";
@@ -48,16 +42,12 @@ static string shortColorTag(const string& color) {
     return "[DF]";
 }
 
-// Pad/truncate to exactly `width` visible chars
 static string padTo(const string& s, int width) {
     int len = (int)s.size();
     if (len >= width) return s.substr(0, width);
     return s + string(width - len, ' ');
 }
 
-// ──────────────────────────────────────────────
-//  Owner label "P1".."P4" from players list
-// ──────────────────────────────────────────────
 static string ownerLabel(Property* prop,
                           const vector<shared_ptr<Player>>& players) {
     if (!prop || prop->getStatus() == StatusType::BANK) return "";
@@ -69,7 +59,6 @@ static string ownerLabel(Property* prop,
     return "";
 }
 
-// Building indicator ^, ^^, ^^^, ^^^^, *
 static string buildingLabel(Street* street) {
     if (!street) return "";
     string bc = street->getBuildingCount();
@@ -81,9 +70,6 @@ static string buildingLabel(Street* street) {
     return "";
 }
 
-// ──────────────────────────────────────────────
-//  Players at a given board position
-// ──────────────────────────────────────────────
 string BoardView::getPlayersOnTile(int pos,
                                     const vector<shared_ptr<Player>>& players) {
     string result;
@@ -95,7 +81,6 @@ string BoardView::getPlayersOnTile(int pos,
     return result;
 }
 
-// Jailed / visiting counts for jail tile
 static pair<int,int> jailCounts(int jailPos,
                                  const vector<shared_ptr<Player>>& players) {
     int inJail = 0, visiting = 0;
@@ -109,10 +94,6 @@ static pair<int,int> jailCounts(int jailPos,
     return {inJail, visiting};
 }
 
-// ──────────────────────────────────────────────
-//  Core formatter: returns {line1, line2} each padded to 10 chars.
-//  line1 already carries ANSI color codes (so actual byte length > 10).
-// ──────────────────────────────────────────────
 pair<string,string> BoardView::formatTile2Line(
         Tile* tile,
         const vector<shared_ptr<Player>>& players) {
@@ -123,14 +104,11 @@ pair<string,string> BoardView::formatTile2Line(
     string tag   = shortColorTag(color);
     string code  = tile->getCode();
 
-    // --- line1: colored tag + code ---
     string raw1 = padTo(tag + " " + code, 10);
     string line1 = getColorCode(color) + raw1 + RESET;
 
-    // --- line2: owner info + player tokens ---
     string line2;
 
-    // Special case: jail tile shows IN/V counts
     SpecialTile* st = dynamic_cast<SpecialTile*>(tile);
     if (st && st->getSpecialType() == JAIL) {
         auto [inJ, vis] = jailCounts(tile->getPosition(), players);
@@ -154,7 +132,6 @@ pair<string,string> BoardView::formatTile2Line(
         if (!mort.empty()) line2 += mort;
     }
 
-    // Player tokens (append regardless of property type)
     string pTok = getPlayersOnTile(tile->getPosition(), players);
     if (!pTok.empty()) {
         if (!line2.empty()) line2 += " ";
@@ -165,9 +142,6 @@ pair<string,string> BoardView::formatTile2Line(
     return {line1, line2};
 }
 
-// ──────────────────────────────────────────────
-//  Legacy single-line formatters (kept so existing callers compile)
-// ──────────────────────────────────────────────
 string BoardView::formatTile(Tile* tile,
                               const vector<shared_ptr<Player>>& players) {
     return formatTile2Line(tile, players).first;
@@ -178,9 +152,6 @@ string BoardView::formatTileBottom(Tile* tile,
     return formatTile2Line(tile, players).second;
 }
 
-// ──────────────────────────────────────────────
-//  Helpers
-// ──────────────────────────────────────────────
 static string centerText(const string& s, int width) {
     int len = (int)s.size();
     if (len >= width) return s.substr(0, width);
@@ -195,19 +166,15 @@ static string hSep(int count) {
     return s;
 }
 
-// ──────────────────────────────────────────────
-//  TOP ROW: indices [side*2 .. side*3], left→right
-// ──────────────────────────────────────────────
 void BoardView::printTop(GameBoard& board,
                           const vector<shared_ptr<Player>>& players) {
-    int side  = board.getTileCount() / 4;   // 10
-    int start = side * 2;                    // 20
-    int end   = side * 3;                    // 30
-    int count = end - start + 1;             // 11
+    int side  = board.getTileCount() / 4;
+    int start = side * 2;
+    int end   = side * 3;
+    int count = end - start + 1;
 
     cout << hSep(count) << "\n";
 
-    // line1
     cout << "|";
     for (int i = start; i <= end; ++i) {
         auto [l1, l2] = formatTile2Line(board.getTileAt(i), players);
@@ -215,7 +182,6 @@ void BoardView::printTop(GameBoard& board,
     }
     cout << "\n";
 
-    // line2
     cout << "|";
     for (int i = start; i <= end; ++i) {
         auto [l1, l2] = formatTile2Line(board.getTileAt(i), players);
@@ -226,17 +192,13 @@ void BoardView::printTop(GameBoard& board,
     cout << hSep(count) << "\n";
 }
 
-// ──────────────────────────────────────────────
-//  BOTTOM ROW: indices [0 .. side], right→left  (so GO is rightmost)
-// ──────────────────────────────────────────────
 void BoardView::printBottom(GameBoard& board,
                               const vector<shared_ptr<Player>>& players) {
     int side  = board.getTileCount() / 4;
-    int count = side + 1;   // 11
+    int count = side + 1;
 
     cout << hSep(count) << "\n";
 
-    // line1 (reversed: index side..0)
     cout << "|";
     for (int i = side; i >= 0; --i) {
         auto [l1, l2] = formatTile2Line(board.getTileAt(i), players);
@@ -244,7 +206,6 @@ void BoardView::printBottom(GameBoard& board,
     }
     cout << "\n";
 
-    // line2
     cout << "|";
     for (int i = side; i >= 0; --i) {
         auto [l1, l2] = formatTile2Line(board.getTileAt(i), players);
@@ -255,28 +216,20 @@ void BoardView::printBottom(GameBoard& board,
     cout << hSep(count) << "\n";
 }
 
-// ──────────────────────────────────────────────
-//  MIDDLE ROWS:
-//    Left column  = indices (side*3)+1 .. (side*4)-1  top→bottom
-//    Right column = indices side .. (side*2)-1         bottom→top
-// ──────────────────────────────────────────────
 void BoardView::printMiddle(GameBoard& board,
                              const vector<shared_ptr<Player>>& players) {
     int total = board.getTileCount();
-    int side  = total / 4;    // 10
+    int side  = total / 4;
 
-    // Left column going downward (indices 31..39 for 40-tile board)
     vector<int> leftCol, rightCol;
-    for (int i = side * 3 + 1; i <= side * 4 - 1; ++i)
+    for (int i = side * 2 - 1; i >= side + 1; --i)
         leftCol.push_back(i);
-    // Right column going upward (indices 10..19, but we reverse display)
-    for (int i = side * 2 - 1; i >= side; --i)
+    for (int i = side * 3 + 1; i <= side * 4 - 1; ++i)
         rightCol.push_back(i);
 
-    int rows = (int)leftCol.size();  // 9
-    int cw   = (side - 1) * 11 - 1; // center panel width
+    int rows = (int)leftCol.size();
+    int cw   = (side - 1) * 11 - 1;
 
-    // Center legend card
     int maxTurn = board.getMaxTurn();
     string turnStr = "TURN " + to_string(board.getCurrentTurnNumber())
                    + (maxTurn > 0 ? " / " + to_string(maxTurn) : " / -");
@@ -306,13 +259,12 @@ void BoardView::printMiddle(GameBoard& board,
         "[DF]=Aksi      [AB]=Utilitas"
     };
 
-    // 3 physical lines per row, except last row has no separator
     int totalLines = rows * 3 - 1;
     int cardH      = (int)centerLines.size();
     int startLine  = (totalLines - cardH) / 2;
     int endLine    = startLine + cardH;
 
-    int gl = 0;  // global line counter
+    int gl = 0;
 
     for (int r = 0; r < rows; ++r) {
         int li = leftCol[r];
@@ -321,7 +273,6 @@ void BoardView::printMiddle(GameBoard& board,
         auto [ll1, ll2] = formatTile2Line(board.getTileAt(li), players);
         auto [rl1, rl2] = formatTile2Line(board.getTileAt(ri), players);
 
-        // physical line 0: tile line1
         {
             string c = (gl >= startLine && gl < endLine)
                      ? centerText(centerLines[gl - startLine], cw)
@@ -330,7 +281,6 @@ void BoardView::printMiddle(GameBoard& board,
             ++gl;
         }
 
-        // physical line 1: tile line2
         {
             string c = (gl >= startLine && gl < endLine)
                      ? centerText(centerLines[gl - startLine], cw)
@@ -339,7 +289,6 @@ void BoardView::printMiddle(GameBoard& board,
             ++gl;
         }
 
-        // physical line 2: separator (skip for last row)
         if (r < rows - 1) {
             string c = (gl >= startLine && gl < endLine)
                      ? centerText(centerLines[gl - startLine], cw)
@@ -350,9 +299,6 @@ void BoardView::printMiddle(GameBoard& board,
     }
 }
 
-// ──────────────────────────────────────────────
-//  Public entry
-// ──────────────────────────────────────────────
 void BoardView::showBoard(GameBoard& board,
                            const vector<shared_ptr<Player>>& players) {
     if (board.getTileCount() < 4) {
