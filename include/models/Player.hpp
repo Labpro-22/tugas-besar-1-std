@@ -5,7 +5,9 @@
 #include <vector>
 using namespace std;
 
+//forward declaration
 class SkillCard;
+class GameBoard;   
 
 enum PlayerStatus {
     ACTIVE,
@@ -21,63 +23,72 @@ private:
     PlayerStatus status;
     int jailTurnsRemaining;
     int consecutiveDoubles;
-    vector<SkillCard*> hand; // pointer sementara, CardDeck yang owner
+    vector<SkillCard*> hand;
     bool hasUsedCardThisTurn;
     bool hasRolledThisTurn;
     bool shieldActive;
     int discountPercent;
 
 public:
-    Player(string name, int startMoney);
+    Player(const string& name, int startMoney);
     ~Player();
 
-    // getter
-    string getUsername();
-    int getMoney();
-    int getPosition();
-    PlayerStatus getStatus();
+    //  Getters 
+    string getUsername() const;
+    int getMoney() const;
+    int getPosition() const;
+    PlayerStatus getStatus() const;
     vector<SkillCard*>& getHand();
-    bool hasRolled();
-    bool hasUsedCard();
-    bool isShieldActive();
-    int getDiscountPercent();
+    const vector<SkillCard*>& getHand() const;
+    bool hasRolled() const;
+    bool hasUsedCard() const;
+    bool isShieldActive() const;
+    int getDiscountPercent() const;
 
-    // setter
+    //  Setters 
     void setPosition(int pos);
     void setStatus(PlayerStatus s);
 
-    // money
-    void payVoluntary(int amt);   // beli properti, lelang — tidak kena shield
-    Player& operator+=(int amt);  // terima uang
-    Player& operator-=(int amt);  // kena tagihan/sanksi — kena shield
+    //  Money operations 
 
-    // wealth — untuk WinConditionChecker dan PPH
+    // payVoluntary: beli properti, lelang, bangun, tebus, dibikin buat bypass Shield 
+    void payVoluntary(int amt);
+
+    // operator+=: terima uang
+    Player& operator+=(int amt);
+
+    // operator-=: sewa, pajak, denda, efek kartu negatif.
+    // Shield memblok sekali trus habis.
+    Player& operator-=(int amt);
+
+    // calculateTotalWealth (uang tunai aja karna player bukan responsibility akses properti) 
     int calculateTotalWealth() const;
 
-    // comparison — untuk WinConditionChecker MAX_TURN
     bool operator>(const Player& other) const;
     bool operator<(const Player& other) const;
 
-    // double
+    // Consec double
     void incrementConsecutiveDoubles();
     void resetConsecutiveDoubles();
-    int getConsecutiveDoubles();
+    int getConsecutiveDoubles() const;
 
-    // jail
+    // Menghitung berapa kali player gagal keluar penjara.
+    // Increment: MovementHandler::handleJailTurn saat STILL_JAILED.
+    // Reset: MovementHandler::sendToJail dan saat berhasil keluar.
     void incrementJailTurns();
     void resetJailTurns();
-    int getJailTurnsRemaining();
+    int getJailTurnsRemaining() const;
 
-    // turn
+    //  Turn flags mark 
     void markRolled();
     void markCardUsed();
-    void resetTurnFlags();
+    void resetTurnFlags();  // dipanggil TurnManager::resetTurnFlags di awal giliran
 
-    // card — CardDeck yang owner, hand hanya pegang sementara
+    //  Card hand management 
     void receiveCard(SkillCard* c);
     SkillCard* removeCard(int idx);
 
-    // effect
+    // Active effects
     void activateShield();
     void clearShield();
     void setDiscount(int d);

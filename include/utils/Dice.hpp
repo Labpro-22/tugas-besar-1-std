@@ -12,13 +12,12 @@ public:
     void rollRandom();
     void setManual(int a, int b);
 
-    int getTotal();
-    bool isDouble();
-
-
-    int getDie1();
-    int getDie2();
-    bool getManualMode();
+    int getTotal() const;
+    bool isDouble() const;
+    
+    int getDie1() const;
+    int getDie2() const;
+    bool getManualMode() const;
 };
 
 #endif
