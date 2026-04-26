@@ -61,6 +61,22 @@ ConfigParser::ConfigParser(const string& basePath)
       chanceDeck(nullptr), communityDeck(nullptr) {
     chanceDeck = new CardDeck<ActionCard>();
     communityDeck = new CardDeck<ActionCard>();
+
+    chanceDeck->addCard(new ChanceCard(ActionCardType::NEAREST_RAILROAD, 0,
+                                       "Pergi ke stasiun terdekat."));
+    chanceDeck->addCard(new ChanceCard(ActionCardType::MOVE_BACKWARD, 3,
+                                       "Mundur 3 petak."));
+    chanceDeck->addCard(new ChanceCard(ActionCardType::GO_TO_JAIL, 0,
+                                       "Masuk Penjara."));
+    chanceDeck->shuffle();
+
+    communityDeck->addCard(new CommunityCard(ActionCardType::COLLECT_FROM_ALL, 100,
+                                             "Ini adalah hari ulang tahun Anda. Dapatkan M100 dari setiap pemain."));
+    communityDeck->addCard(new CommunityCard(ActionCardType::PAY_MONEY, 700,
+                                             "Biaya dokter. Bayar M700."));
+    communityDeck->addCard(new CommunityCard(ActionCardType::PAY_TO_ALL, 200,
+                                             "Anda mau nyaleg. Bayar M200 kepada setiap pemain."));
+    communityDeck->shuffle();
 }
 
 ConfigParser::~ConfigParser() {

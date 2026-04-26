@@ -4,8 +4,8 @@
 
 string TransactionLogger::formatEntry(int turn, const string& username,const string& actionType,const string& detail) const {
     ostringstream oss;
-    oss << "[Turn " << turn << "] " << username
-        << " | " << actionType << " | " << detail;
+    oss << turn << " " << username << " " << actionType;
+    if (!detail.empty()) oss << " " << detail;
     return oss.str();
 }
 
