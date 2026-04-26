@@ -13,8 +13,26 @@ void GameView::showError(const string& msg) {
 
 void GameView::showHeader() {
     cout << "========================================\n";
-    cout << "       MONOPOLI GAME - OOP Edition\n";
+    cout << "             MONOPOLI GAME \n";
     cout << "========================================\n\n";
+}
+
+void GameView::showCommandList() {
+    cout << "Commands tersedia:\n";
+    cout << "  CETAK_PAPAN       - Menampilkan board game\n";
+    cout << "  CETAK_AKTA        - Menampilkan akta kepemilikan properti\n";
+    cout << "  CETAK_PROPERTI    - Menampilkan detail properti\n";
+    cout << "  LEMPAR_DADU       - Melempar dadu secara random\n";
+    cout << "  ATUR_DADU [X Y]   - Atur hasil dadu secara manual\n";
+    cout << "  GADAI             - Menggadaikan properti\n";
+    cout << "  TEBUS             - Menebus properti yang digadai\n";
+    cout << "  BANGUN            - Membangun rumah/hotel di properti\n";
+    cout << "  GUNAKAN_KEMAMPUAN - Menggunakan kartu kemampuan spesial\n";
+    cout << "  SIMPAN [file]     - Simpan state game (default savegame.txt)\n";
+    cout << "  MUAT   [file]     - Muat state game (default savegame.txt)\n";
+    cout << "  CETAK_LOG         - Tampilkan seluruh log transaksi\n";
+    cout << "  EXIT              - Keluar dari game\n";
+    cout << "  HELP              - Tampilkan help ini\n";
 }
 
 void GameView::showTurnInfo(int currentTurn, int maxTurn) {

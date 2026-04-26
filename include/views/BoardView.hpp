@@ -26,6 +26,8 @@ private:
     void printTop(GameBoard& board, const std::vector<std::shared_ptr<Player>>& players);
     void printBottom(GameBoard& board, const std::vector<std::shared_ptr<Player>>& players);
     void printMiddle(GameBoard& board, const std::vector<std::shared_ptr<Player>>& players);
+    string formatTile(Tile* tile, const vector<shared_ptr<Player>>& players);
+    string formatTileBottom(Tile* tile, const vector<shared_ptr<Player>>& players);
 };
 
 #endif

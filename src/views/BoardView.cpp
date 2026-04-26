@@ -5,39 +5,6 @@
 #include <iomanip>
 using namespace std;
 
-pair<string, string> BoardView::formatTile2Line(Tile* tile, const vector<shared_ptr<Player>>& players) {
-    if (!tile) return {"          ", "          "};
-
-    string code = tile->getCode();
-    string name = tile->getName().substr(0, min((size_t)3, tile->getName().length()));
-
-    string line1 = "[" + code + "] " + name;
-
-    if (line1.length() < 10)
-        line1 += string(10 - line1.length(), ' ');
-    else
-        line1 = line1.substr(0, 10);
-
-    string line2 = "";
-    // for (int i = 0; i < (int)players.size(); i++) {
-    //     if (players[i]->getPosition() == tile->getPosition()) {
-    //         line2 += "(" + to_string(i+1) + ")";
-    //     }
-    // }
-
-    if (line2.length() < 10)
-        line2 += string(10 - line2.length(), ' ');
-    else
-        line2 = line2.substr(0, 10);
-
-    string color = getColorCode(tile->getColor());
-
-    return {
-        color + line1 + "\033[0m",
-        color + line2 + "\033[0m"
-    };
-}
-
 string BoardView::getColorCode(const string& color) {
     if (color == "MERAH") return "\033[31m";
     if (color == "KUNING") return "\033[33m";
@@ -51,143 +18,224 @@ string BoardView::getColorCode(const string& color) {
     return "\033[37m";
 }
 
+string BoardView::formatTile(Tile* tile, const vector<shared_ptr<Player>>& players) {
+    if (!tile) return "          ";
 
-string BoardView::getPlayersOnTile(int pos, const vector<shared_ptr<Player>>& players) {
-    stringstream ss;
+    string code = tile->getCode(); // JKT, BDG, dll
+    string color = tile->getColor(); // BIRU_TUA dll
 
-    for (const auto& p : players) {
-        if (p != nullptr && p->getPosition() == pos) {
-            ss << p->getUsername() << " ";
+    string shortColor = "[" + color.substr(0,2) + "]"; // [BT], [MR]
+
+    string top = shortColor + " " + code;
+
+    if (top.length() < 10)
+        top += string(10 - top.length(), ' ');
+    else
+        top = top.substr(0, 10);
+
+    return top;
+}
+
+string BoardView::formatTileBottom(Tile* tile, const vector<shared_ptr<Player>>& players) {
+    if (!tile) return "          ";
+
+    string content = "";
+
+    // contoh: P1
+    // nanti bisa ambil owner dari property
+    content += "P1 ";
+
+    // contoh: ^^^
+    // sementara dummy dulu
+    content += "^^ ";
+
+    // pemain di tile
+    for (int i = 0; i < players.size(); i++) {
+        if (players[i]->getPosition() == tile->getPosition()) {
+            content += "(" + to_string(i+1) + ")";
         }
     }
 
-    return ss.str();
+    if (content.length() < 10)
+        content += string(10 - content.length(), ' ');
+    else
+        content = content.substr(0, 10);
+
+    return content;
+}
+    
+string centerText(const string& s, int width) {
+    if ((int)s.length() >= width) return s.substr(0, width);
+
+    int left = (width - s.length()) / 2;
+    int right = width - s.length() - left;
+
+    return string(left, ' ') + s + string(right, ' ');
 }
 
 void BoardView::printTop(GameBoard& board, const vector<shared_ptr<Player>>& players) {
+
+    // int side = board.getTileCount() / 4;
+    int side = board.getTileCount() / 4;
+    int start = side * 2;
+    int end = start + side;
+
+    // border atas
     cout << "+";
-    for (int i = 30; i >= 20; i--) cout << "----------+";
+    for (int i = start; i <= end; i++) cout << "----------+";
     cout << endl;
 
-    // BARIS 1
+    // line atas tile
     cout << "|";
-    for (int i = 30; i >= 20; i--) {
-        auto t = formatTile2Line(board.getTileAt(i), players);
-        cout << t.first << "|";
+    for (int i = start; i <= end; i++) {
+        cout << formatTile(board.getTileAt(i), players) << "|";
     }
     cout << endl;
 
-    // BARIS 2
+    // line bawah tile
     cout << "|";
-    for (int i = 30; i >= 20; i--) {
-        auto t = formatTile2Line(board.getTileAt(i), players);
-        cout << t.second << "|";
+    for (int i = start; i <= end; i++) {
+        cout << formatTileBottom(board.getTileAt(i), players) << "|";
     }
     cout << endl;
+
+    // border bawah
     cout << "+";
-    for (int i = 0; i <= 10; i++) cout << "----------+";
+    for (int i = start; i <= end; i++) cout << "----------+";
     cout << endl;
 }
 
 void BoardView::printBottom(GameBoard& board, const vector<shared_ptr<Player>>& players) {
+
+    // int side = board.getTileCount() / 4;
+    int side = board.getTileCount() / 4;
+
+    // border atas
     cout << "+";
-    for (int i = 0; i <= 10; i++) cout << "----------+";
+    for (int i = 0; i <= side; i++) cout << "----------+";
     cout << endl;
 
-    // BARIS 1
     cout << "|";
-    for (int i = 0; i <= 10; i++) {
-        auto t = formatTile2Line(board.getTileAt(i), players);
-        cout << t.first << "|";
+    for (int i = side; i >= 0; i--) {
+        cout << formatTile(board.getTileAt(i), players) << "|";
     }
     cout << endl;
 
-    // BARIS 2
     cout << "|";
-    for (int i = 0; i <= 10; i++) {
-        auto t = formatTile2Line(board.getTileAt(i), players);
-        cout << t.second << "|";
+    for (int i = side; i >= 0; i--) {
+        cout << formatTileBottom(board.getTileAt(i), players) << "|";
     }
     cout << endl;
+
+    // border bawah
     cout << "+";
-    for (int i = 0; i <= 10; i++) cout << "----------+";
+    for (int i = 0; i <= side; i++) cout << "----------+";
     cout << endl;
 }
 
 
-// void BoardView::printCenterInfo(TurnManager& turnManager) {
-
-//     cout << "        ==================================\n";
-//     cout << "        ||          NIMONSPOLI          ||\n";
-//     cout << "        ==================================\n\n";
-
-//     cout << "                  TURN " + to_string(turnManager.getCurrentTurnNumber()) + " / " + to_string(turnManager.getMaxTurn()) + "\n\n";
-
-//     cout << "        ----------------------------------\n";
-//     cout << "        LEGENDA KEPEMILIKAN & STATUS\n";
-//     cout << "        P1-P4 : Properti milik Pemain 1-4\n";
-//     cout << "        ^  : Rumah level 1\n";
-//     cout << "        ^^ : Rumah level 2\n";
-//     cout << "        ^^^: Rumah level 3\n";
-//     cout << "        *  : Hotel (Maksimal)\n";
-//     cout << "        (1)-(4): Bidak (IN=Tahanan, V=Mampir)\n";
-//     cout << "        ----------------------------------\n";
-//     cout << "        KODE WARNA:\n";
-//     cout << "        [CK]=Coklat    [MR]=Merah\n";
-//     cout << "        [BM]=Biru Muda [KN]=Kuning\n";
-//     cout << "        [PK]=Pink      [HJ]=Hijau\n";
-//     cout << "        [OR]=Orange    [BT]=Biru Tua\n";
-//     cout << "        [DF]=Aksi      [AB]=Utilitas\n";
-// }
-
 void BoardView::printMiddle(GameBoard& board, const vector<shared_ptr<Player>>& players) {
+    vector<string> centerLines = {
+        "==================================",
+        "||        NIMONSPOLI            ||",
+        "==================================",
+        "",
+        "TURN " + to_string(board.getCurrentTurnNumber()) + " / " + to_string(board.getMaxTurn()),
+        "",
+        "----------------------------------",
+        "LEGENDA KEPEMILIKAN & STATUS",
+        "P1-P4 : Properti milik Pemain 1-4",
+        "^  : Rumah level 1",
+        "^^ : Rumah level 2",
+        "^^^: Rumah level 3",
+        "*  : Hotel (Maksimal)",
+        "(1)-(4): Bidak (IN=Tahanan, V=Mampir)",
+        "----------------------------------",
+        "KODE WARNA:",
+        "[CK]=Coklat    [MR]=Merah",
+        "[BM]=Biru Muda [KN]=Kuning",
+        "[PK]=Pink      [HJ]=Hijau",
+        "[OR]=Orange    [BT]=Biru Tua",
+        "[DF]=Aksi      [AB]=Utilitas"
+    };
 
-    const int TILE_WIDTH = 10;
-    const int INNER_WIDTH = TILE_WIDTH * 9;
+    // int side = board.getTileCount() / 4;
+    int side = board.getTileCount() / 4;
+    int middleRows = side - 1;
+    int linesPerRow = 3;
 
-    int left = 39;
-    int right = 11;
+    int totalWidth = side * 11 + 1; 
+    int centerWidth = totalWidth - (10 + 3);
 
-    for (int i = 0; i < 16; i++) {
+    int totalLines = middleRows * linesPerRow;
+    int cardHeight = centerLines.size();
 
-        auto L = formatTile2Line(board.getTileAt(left--), players);
-        auto R = formatTile2Line(board.getTileAt(right++), players);
+    int startLine = (totalLines - cardHeight) / 2;
+    int endLine = startLine + cardHeight;
 
-        // ===== BARIS 1 =====
-        cout << "|" << L.first;
+    int globalLine = 0;
 
-        if (i == 0) cout << "        ==================================        ";
-        else if (i == 1) cout << "        ||          NIMONSPOLI          ||        ";
-        else if (i == 2) cout << "        ==================================        ";
-        else if (i == 3) cout << string(INNER_WIDTH, ' ');
-        else if (i == 4) {
-            string t = "        TURN " + to_string(board.getCurrentTurnNumber()) +
-                       " / " + to_string(board.getMaxTurn());
-            cout << t << string(INNER_WIDTH - t.length(), ' ');
+    for (int i = 0; i < middleRows; i++) {
+
+        int left = 11 + i;
+        int right = 31 + i;
+
+        // ===== LINE 1 =====
+        string center;
+        if (globalLine >= startLine && globalLine < endLine) {
+            center = centerText(centerLines[globalLine - startLine], centerWidth);
+        } else {
+            center = string(centerWidth, ' ');
         }
-        else if (i == 5) cout << string(INNER_WIDTH, ' ');
-        else if (i == 6) cout << "        ----------------------------------        ";
-        else if (i == 7) cout << "        LEGENDA KEPEMILIKAN & STATUS      ";
-        else if (i == 8) cout << "        P1-P4 : Properti milik Pemain     ";
 
-        cout << R.first << "|" << endl;
+        cout << "|"
+            << formatTile(board.getTileAt(left), players)
+            << "|"
+            << center
+            << "|"
+            << formatTile(board.getTileAt(right), players)
+            << "|\n";
 
-        // ===== BARIS 2 =====
-        cout << "|" << L.second;
-        cout << string(INNER_WIDTH, ' ');
-        cout << R.second << "|" << endl;
+        globalLine++;
+
+        // ===== LINE 2 =====
+        if (globalLine >= startLine && globalLine < endLine) {
+            center = centerText(centerLines[globalLine - startLine], centerWidth);
+        } else {
+            center = string(centerWidth, ' ');
+        }
+
+        cout << "|"
+            << formatTileBottom(board.getTileAt(left), players)
+            << "|"
+            << center
+            << "|"
+            << formatTileBottom(board.getTileAt(right), players)
+            << "|\n";
+
+        globalLine++;
+
+        // ===== LINE 3 (separator) =====
+        if (i != middleRows - 1) {
+            if (globalLine >= startLine && globalLine < endLine) {
+                center = centerText(centerLines[globalLine - startLine], centerWidth);
+            } else {
+                center = string(centerWidth, ' ');
+            }
+
+            cout << "+----------+"
+                << center
+                << "+----------+\n";
+
+            globalLine++;
+        }
     }
 }
 
 
 
 void BoardView::showBoard(GameBoard& board, const vector<shared_ptr<Player>>& players) {
-
     printTop(board, players);
-
-
     printMiddle(board, players);
-
-
     printBottom(board, players);
 }
