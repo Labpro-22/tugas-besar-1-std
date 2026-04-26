@@ -1,6 +1,4 @@
-#include <cstdlib>
-#include <ctime>
-#include "Dice.hpp"
+#include "../../include/utils/Dice.hpp"
 
 Dice::Dice() {
     static bool seeded = false;

@@ -1,13 +1,8 @@
-#include "SkillCardManager.hpp"
-#include "SkillCard.hpp"
-#include "Player.hpp"
-#include "GameContext.hpp"
-#include "CardDeck.hpp"
-
-#include <cstdlib>
-#include <stdexcept>
-
-using namespace std;
+#include "../../include/core/SkillCardManager.hpp"
+#include "../../include/utils/SkillCard.hpp"
+#include "../../include/models/Player.hpp"
+#include "../../include/core/GameContext.hpp"
+#include "../../include/utils/CardDeck.hpp"
 
 SkillCardManager::SkillCardManager(int maxSize)
     : maxHandSize(maxSize > 0 ? maxSize : 3) {}

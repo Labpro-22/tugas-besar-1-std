@@ -2,8 +2,15 @@
 #define SKILLCARDMANAGER_H
 
 #include <vector>
-#include "CardDeck.hpp"
-#include "SkillCard.hpp"
+#include <cstdlib>
+#include <stdexcept>
+
+#include "../utils/CardDeck.hpp"
+#include "../utils/SkillCard.hpp"
+#include <cstdlib>
+#include <stdexcept>
+
+using namespace std;
 
 // Forward declarations
 class Player;

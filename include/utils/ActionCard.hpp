@@ -2,6 +2,10 @@
 #define ACTIONCARD_H
 
 #include <string>
+#include <string>
+#include <climits>
+
+using namespace std;
 
 // Forward declarations
 class Player;

@@ -1,7 +1,7 @@
 #ifndef MOVEMENTHANDLER_H
 #define MOVEMENTHANDLER_H
 
-#include "JailTile.hpp"   
+#include "../models/JailTile.hpp"   
 
 class GameBoard;
 class Player;

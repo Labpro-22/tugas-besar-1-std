@@ -1,15 +1,11 @@
-#include "ActionCard.hpp"
-#include "Player.hpp"
-#include "GameContext.hpp"
-#include "GameBoard.hpp"
-#include "SkillCardManager.hpp"
-#include "MovementHandler.hpp"
-#include "Railroad.hpp"
+#include "../../include/utils/ActionCard.hpp"
+#include "../../include/models/Player.hpp"
+#include "../../include/core/GameContext.hpp"
+#include "../../include/models/GameBoard.hpp"
+#include "../../include/core/SkillCardManager.hpp"
+#include "../../include/core/MovementHandler.hpp"
+#include "../../include/models/Railroad.hpp"
 
-#include <string>
-#include <climits>
-
-using namespace std;
 
 ChanceCard::ChanceCard(ActionCardType t, int v, string d)
     : type(t), value(v), desc(d) {}

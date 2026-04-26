@@ -1,6 +1,9 @@
 #ifndef DICE_H
 #define DICE_H
 
+#include <cstdlib>
+#include <ctime>
+
 class Dice {
 private:
     int d1, d2;

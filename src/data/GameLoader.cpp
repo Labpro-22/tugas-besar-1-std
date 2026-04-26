@@ -61,7 +61,7 @@ SkillCard* buildSkillCard(const string& type, const string& valTok, const string
     } else if (type == "SHIELD" || type == "ShieldCard") {
         card = new ShieldCard();
     } else if (type == "TELEPORT" || type == "TeleportCard") {
-        card = new TeleportCard(value);
+        card = new TeleportCard();
     } else if (type == "LASSO" || type == "LassoCard") {
         card = new LassoCard();
     } else if (type == "DEMOLITION" || type == "DemolitionCard") {

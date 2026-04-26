@@ -1,6 +1,6 @@
-#include "TurnManager.hpp"
-#include "Player.hpp"
-#include "GameBoard.hpp"
+#include "../../include/core/TurnManager.hpp"
+#include "../../include/models/Player.hpp"
+#include "../../include/models/GameBoard.hpp"
 
 using namespace std;
 

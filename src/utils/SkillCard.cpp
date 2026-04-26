@@ -8,13 +8,6 @@
 #include "../../include/views/GameView.hpp"
 #include "../../include/data/TransactionLogger.hpp"
 
-#include <iostream>
-#include <string>
-#include <vector>
-
-using namespace std;
-
-
 SkillCard::SkillCard(const string& type, int val, int duration)
     : cardType(type), value(val), remainingDuration(duration) {}
 

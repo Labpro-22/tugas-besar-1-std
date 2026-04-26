@@ -1,8 +1,8 @@
-#include "Player.hpp"
-#include "SkillCard.hpp"
-#include "GameBoard.hpp"
-#include "Property.hpp"
-#include "Street.hpp"
+#include "../../include/models/Player.hpp"
+#include "../../include/utils/SkillCard.hpp"
+#include "../../include/models/GameBoard.hpp"
+#include "../../include/models/Property.hpp"
+#include "../../include/models/Street.hpp"
 
 Player::Player(const string& name, int startMoney)
     : username(name), money(startMoney), position(0),
